@@ -16,3 +16,5 @@ OSM-GPS-Tracer
 Anas
 
 Vollhorsterei COKG was here....
+
+Ihr seid alle Penner!
