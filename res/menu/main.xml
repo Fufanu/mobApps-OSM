@@ -1,9 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
+     <item android:id="@+id/Menue_SwitchButton_Stats"
+          android:icon="@drawable/ic_action_view_as_list"
+          android:title="@string/Menue_SwitchButton_Stats_Title"
+          android:showAsAction="ifRoom"/>
+     
+      <item android:id="@+id/Menue_SwitchButton_Map"
+          android:icon="@drawable/ic_action_map"
+          android:title="@string/Menue_SwitchButton_Map_Title"
+          android:showAsAction="ifRoom"/>
+      
+       
+       <item android:id="@+id/Menue_SwitchButton_Settings"
+          android:icon="@drawable/ic_action_settings"
+          android:title="@string/Menue_SwitchButton_Settings_Title"
+          android:showAsAction="ifRoom"/>
+   
+
 
 </menu>

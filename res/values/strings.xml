@@ -4,5 +4,11 @@
     <string name="app_name">mobApps-OSM</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
+    <!-- Switch Menue -->
+	<string name="Menue_SwitchButton_Settings_Title">Einstellungen</string>
+	<string name="Menue_SwitchButton_Map_Title">Karte</string>
+	<string name="Menue_SwitchButton_Stats_Title">Auswertung</string>
+
 
 </resources>
