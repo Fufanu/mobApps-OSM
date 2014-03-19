@@ -1,35 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:columnCount="2"
+    android:orientation="vertical"
+    android:visibility="visible" >
 
-    <android.widget.TextView
-        android:id="@+id/textView1"
+    <Spinner
+        android:id="@+id/fStats_DropDown_Files"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="fill_horizontal"
+        android:layout_toLeftOf="@+id/fStats_Button_DeleteFile" />
+
+    <Space
+        android:id="@+id/Space1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stats"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <android.widget.EditText
-        android:id="@+id/editText1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10" >
-
-        <requestFocus />
-    </android.widget.EditText>
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:layout_column="1"
+        android:layout_gravity="fill_vertical"
+        android:layout_row="3" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/fStats_Button_DeleteFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:layout_alignBottom="@+id/fStats_DropDown_Files"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/fStats_Button_DeleteFile_Text" />
 
-</LinearLayout>
+    <EditText
+        android:id="@+id/fStats_DisplayFileSource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/fStats_DropDown_Files"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:lines="17" >
+
+        <requestFocus />
+    </EditText>
+
+</RelativeLayout>

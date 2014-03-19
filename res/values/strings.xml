@@ -10,5 +10,7 @@
 	<string name="Menue_SwitchButton_Map_Title">Karte</string>
 	<string name="Menue_SwitchButton_Stats_Title">Auswertung</string>
 
+	<!-- Fragment Stats -->
+	<string name="fStats_Button_DeleteFile_Text">löschen</string>
 
 </resources>
