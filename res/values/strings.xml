@@ -15,5 +15,6 @@
 	
 	<!-- Fragment Settings -->
 	<string name="fSettings_Button_DeleteFile_Text">löschen</string>
+	<string name="fSettings_Button_Save_Text">speichern</string>
 
 </resources>

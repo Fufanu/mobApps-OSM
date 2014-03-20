@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 public class DataManager {
 	
-	SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy_hh-mm-ss");
+	SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy_kk-mm-ss");
 	
 	//Konstanten
 	private String FOLDER_NAME = "/GPS_LOGS";

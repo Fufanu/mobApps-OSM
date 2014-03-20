@@ -15,9 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class fragment_settings extends Fragment implements OnItemSelectedListener, OnClickListener {
 	private Button btn_deleteFile;
+	private Button btn_saveSettings;
 	private Spinner DropDown;
 	private DataManager DM;
 	private TextView DisplayFile;
@@ -31,15 +33,30 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		DropDown.setOnItemSelectedListener(this);
 		btn_deleteFile = (Button) view.findViewById(R.id.fSettings_Button_DeleteFile);
 		btn_deleteFile.setOnClickListener(this);
+		btn_saveSettings = (Button)view.findViewById(R.id.fSettings_Button_Save);
+		btn_saveSettings.setOnClickListener(this);
 		
 		DM = new DataManager();
 		
 		DM.createSettingsFile();
+		//DM.createNewGPSLogFile();
 			
 		refreshDropDown();
 		
+		loadSettings();
+		
 		DisplayFile.setText(DM.readSettingsFile().toString());
 		return view;
+	}
+	
+	private void loadSettings(){
+		
+		for(int i = 0; i < DropDown.getCount(); i++){
+			if(DropDown.getItemAtPosition(i).toString().contains(DM.readSettingsFile().trim())){
+				DropDown.setSelection(i);
+				break;
+			}
+		}	
 	}
 
 	@Override
@@ -49,14 +66,17 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
         	DM.deleteGPSLogFile(DropDown.getSelectedItem().toString());
         	refreshDropDown();       	
         }
+		else if(v.getId() == R.id.fSettings_Button_Save){
+			DM.rewriteSettingsFile(DropDown.getSelectedItem().toString());
+			DisplayFile.setText(DM.readSettingsFile().toString());
+		}
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 			long arg3) {
 		// TODO Auto-generated method stub
-		DM.rewriteSettingsFile(DropDown.getSelectedItem().toString());
-		DisplayFile.setText(DM.readSettingsFile().toString());
+
 		
 	}
 

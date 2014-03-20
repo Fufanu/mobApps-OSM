@@ -32,9 +32,17 @@
         android:layout_below="@+id/fSettings_DropDown_Files"
         android:ems="10"
         android:inputType="textMultiLine"
-        android:lines="17" >
+        android:lines="15" >
 
         <requestFocus />
     </EditText>
+
+    <Button
+        android:id="@+id/fSettings_Button_Save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fSettings_DisplayFileSource"
+        android:layout_centerHorizontal="true"
+        android:text="@string/fSettings_Button_Save_Text" />
 
 </RelativeLayout>
