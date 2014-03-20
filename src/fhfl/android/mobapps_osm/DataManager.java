@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
+import android.widget.Toast;
 
 public class DataManager {
 	
@@ -78,15 +80,29 @@ public class DataManager {
 		return file;
 	}
 
+	// Erzeugt eine neue Datei und gibt diese zurück
+	public File createSettingsFile(){
+		File file = new File(Environment.getExternalStorageDirectory() + "/GPS_LOGS/" , "Settings.xml" );
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return file;
+	}
+	
 	// Gibt eine Liste der Dateien zurück
 	public ArrayList<String> getAllFiles(){
 		ArrayList<String> Files = new ArrayList<String>();
 		
 		// get all the files from a directory
 		File[] fList = new File(Environment.getExternalStorageDirectory() + FOLDER_NAME).listFiles();
-		for (File f : fList) {
-			if(!f.isDirectory())
+		for (File f : fList) {			
+			if(f.isFile() && f.getName().endsWith(".gpx"))
+			{
 				Files.add(f.getName());
+			}
 		}
 		return Files;
 	}
@@ -112,12 +128,27 @@ public class DataManager {
 		}
 	}
 
+	// Überschreibt die Settings.xml
+	public boolean rewriteSettingsFile(String Value){
+			try {
+				BufferedWriter bw = new BufferedWriter(new FileWriter(Environment.getExternalStorageDirectory() + FOLDER_NAME + "/Settings.xml", false));
+				
+				bw.write(Value);
+				bw.close();
+				return true;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+		}
+	
 	// Gibt den Inhalt der Datei als String zurück
 	public String readGPSLogFile(String FileName){
    
 	    BufferedReader reader;
 		try {
-			reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(Environment.getExternalStorageDirectory() + FOLDER_NAME + "/" + FileName))));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(Environment.getExternalStorageDirectory() + FOLDER_NAME + "/" + FileName.trim() ))));
 			StringBuilder sb = new StringBuilder();
 		    String line = null;
 		    while ((line = reader.readLine()) != null) {
@@ -128,8 +159,29 @@ public class DataManager {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "ERROR";
+			return "ERROR_readGPSLogFile";
 		}
 	    
 	}
+
+	// Gibt den Inhalt der Datei als String zurück
+		public String readSettingsFile(){
+	   
+		    BufferedReader reader;
+			try {
+				reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(Environment.getExternalStorageDirectory() + FOLDER_NAME + "/Settings.xml"))));
+				StringBuilder sb = new StringBuilder();
+			    String line = null;
+			    while ((line = reader.readLine()) != null) {
+			      sb.append(line).append("\n");
+			    }
+			    reader.close();
+			    return sb.toString();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return "ERROR_readStettingsFile";
+			}
+		    
+		}
 }

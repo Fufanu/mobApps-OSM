@@ -12,5 +12,8 @@
 
 	<!-- Fragment Stats -->
 	<string name="fStats_Button_DeleteFile_Text">löschen</string>
+	
+	<!-- Fragment Settings -->
+	<string name="fSettings_Button_DeleteFile_Text">löschen</string>
 
 </resources>

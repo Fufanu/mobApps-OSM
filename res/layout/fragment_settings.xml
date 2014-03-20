@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:columnCount="3"
+    android:orientation="horizontal"
+    android:visibility="visible" >
 
-    <android.widget.TextView
-        android:id="@+id/fSettings_TextView_Test"
+    <Spinner
+        android:id="@+id/fSettings_DropDown_Files"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/fSettings_Button_DeleteFile" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/fSettings_Button_DeleteFile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/fSettings_Button_DeleteFile_Text" />
+
+    <EditText
+        android:id="@+id/fSettings_DisplayFileSource"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/fSettings_DropDown_Files"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:lines="17" >
+
+        <requestFocus />
+    </EditText>
+
+</RelativeLayout>
