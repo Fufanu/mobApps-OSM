@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
+	
+	SettingsContainer settings = new SettingsContainer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

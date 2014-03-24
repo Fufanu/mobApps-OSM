@@ -24,9 +24,14 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 	private DataManager DM;
 	private TextView DisplayFile;
 	private View view;
+	private SettingsContainer settings;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		
+		MainActivity activity = (MainActivity) getActivity();
+		settings = activity.settings;
+		
 		view = inflater.inflate(R.layout.fragment_settings, container, false);
 		DisplayFile = (TextView)view.findViewById(R.id.fSettings_DisplayFileSource);
 		DropDown = (Spinner)view.findViewById(R.id.fSettings_DropDown_Files);
@@ -69,6 +74,7 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		else if(v.getId() == R.id.fSettings_Button_Save){
 			DM.rewriteSettingsFile(DropDown.getSelectedItem().toString());
 			DisplayFile.setText(DM.readSettingsFile().toString());
+			settings.reloadTrackPointHandler();
 		}
 	}
 
