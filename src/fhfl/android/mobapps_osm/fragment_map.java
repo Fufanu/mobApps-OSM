@@ -20,6 +20,7 @@ import ecl.Overlays.FhflTrackOverlay;
 import ecl.Overlays.FhflVectorOverlay;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class fragment_map extends Fragment implements MapEventsReceiver {
 	
@@ -144,6 +146,11 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 			settings.getMapDistanceDrawList().addPoint((GeoPoint) point, Color.RED, "Punkt 2", Color.BLACK, 24f);
 			Log.i("MAP", "Punkt1: " + settings.getMapDistancePoint().toString() + ", Punkt2: " + point.toString());
 			// TODO Rechnung und vielleicht Verbindungslinie
+			int a = settings.getMapDistancePoint().distanceTo(point);
+			CharSequence text = "Punkt 1 Koordinaten: " + settings.getMapDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + point.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
+			settings.setDistanceToast(Toast.makeText(context, text, settings.getToastDurationt()));
+			settings.getDistanceToast().show();
+			Log.d("DISTANCE",text.toString());
 		}
 		else
 		{

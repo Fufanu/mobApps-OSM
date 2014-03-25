@@ -11,6 +11,7 @@ import org.osmdroid.views.MapView;
 
 import android.graphics.Color;
 import android.util.Log;
+import android.widget.Toast;
 import ecl.Datacontainer.DrawObjectList;
 import ecl.Datacontainer.DrawableList;
 import ecl.Datacontainer.TrackPointList;
@@ -38,6 +39,8 @@ public class SettingsContainer extends Observable implements Serializable {
 	private int zoom = 13;
 	
 	private GeoPoint mapDistancePoint;
+	private Toast distanceToast;
+	private int toastDurationt = Toast.LENGTH_LONG;
 	
 	private boolean internetConnection = false;
 	private boolean mapFollowing = false;
@@ -197,5 +200,37 @@ public class SettingsContainer extends Observable implements Serializable {
 	 */
 	public DrawObjectList getMapTrackDrawList() {
 		return mapTrackDrawList;
+	}
+
+
+	/**
+	 * @return the distanceToast
+	 */
+	public Toast getDistanceToast() {
+		return distanceToast;
+	}
+
+
+	/**
+	 * @param distanceToast the distanceToast to set
+	 */
+	public void setDistanceToast(Toast distanceToast) {
+		this.distanceToast = distanceToast;
+	}
+
+
+	/**
+	 * @return the toastDurationt
+	 */
+	public int getToastDurationt() {
+		return toastDurationt;
+	}
+
+
+	/**
+	 * @param toastDurationt the toastDurationt to set
+	 */
+	public void setToastDurationt(int toastDurationt) {
+		this.toastDurationt = toastDurationt;
 	}
 }
