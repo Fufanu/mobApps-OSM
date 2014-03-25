@@ -79,7 +79,7 @@ public class DataManager {
 		}
 		return file;
 	}
-
+	
 	// Erzeugt eine neue Datei und gibt diese zurück
 	public File createSettingsFile(){
 		File file = new File(Environment.getExternalStorageDirectory() + "/GPS_LOGS/" , "Settings.xml" );

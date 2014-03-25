@@ -1,8 +1,15 @@
 package fhfl.android.mobapps_osm;
 
+import java.io.File;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -14,8 +21,10 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.R.string;
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,15 +41,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class fragment_stats extends Fragment implements OnClickListener {
-	private Button btn_deleteFile;
-	private Spinner DropDown;
 	private DataManager DM;
-	private TextView DisplayFile;
 	private View view;
 	private TrackPointsHandler TPH;
-	
+	private Handler handler;
 	private GraphicalView mChart;
-	private String[] mMonth = new String[] {"Jan", "Feb" , "Mar", "Apr", "May", "Jun", "Jul", "Aug" };
+	private ProgressDialog progress;
+	
+	private SimpleDateFormat dateFormat;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -48,60 +56,50 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.fragment_stats, container, false);
 		DM = new DataManager();
-		TPH = new TrackPointsHandler(DM.readGPSLogFile(DM.readSettingsFile()));
-		
-		ArrayList<TrackPoint> TPL = TPH.getPointsList();
-		
-		String tmp = String.valueOf(TPL.size());
-		
-		for(TrackPoint tp : TPL){
-			tmp += " NEW ";
-			tmp += String.valueOf(tp.getValid()) + " ";
-			tmp += String.valueOf(tp.getLat()) + " ";
-			tmp += String.valueOf(tp.getLon()) + " ";
-			tmp += String.valueOf(tp.getEle()) + " ";
-			tmp += tp.getDate() + " ";
-			tmp += tp.getTime() + " ";
-			
-		}
-		
-		//DM.rewriteSettingsFile(tmp);
-		
-		//###################################################### ALT
-		//DisplayFile = (TextView)view.findViewById(R.id.fStats_DisplayFileSource);
 		
 		
 		
-		/*DM.createNewGPSLogFile();
-		DM.createSettingsFile();
-		DM.rewriteSettingsFile("test");
-		DM.rewriteSettingsFile("läuft");*/
 		
-		//String tmp = DM.readSettingsFile();
+		handler = new Handler();
+		handler.postDelayed(runnable, 0);
 
-		//DisplayFile.setText(DM.readGPSLogFile(tmp));
-		
-		
-		//####################################################### NEU
-		
-		OpenChart();
-		
-	
 		return view;
 	}
+	
+	private Runnable runnable = new Runnable() {
+		   @Override
+		   public void run() {
+		      /* do what you need to do */
+			   OpenChart();
+		      /* and here comes the "trick" */
+		      handler.postDelayed(this, 60000);
+		   }
+		};
 
 	private void OpenChart() {
 		// Define the number of elements you want in the chart.
-	    int x[]={0,1,2,3,2,5,6,0};
-	    int z[]={0,1,2,3,4,5,6,7};
+	    
+	    ArrayList<StatsPoint> data = getNewData();
 	   
+	    double y[] = new double[data.size()];
+	    double x[] = new double[data.size()];
+
+	    
+	    double xVal = 0.0;
+	    
+	    for(int i =0; i < data.size(); i++){
+	    	y[i] = data.get(i).getSpeed();
+	    	xVal += data.get(i).getTimeOffset();
+	    	x[i] = xVal/60;
+	    } 
+	    
 	    // Create XY Series for X Series.
 	    XYSeries xSeries=new XYSeries("X Series");
 	   
 	    //  Adding data to the X Series.
-	    for(int i=0;i<z.length;i++)
+	    for(int i=0;i<x.length;i++)
 	    {
-	    xSeries.add(z[i],x[i]);
+	    xSeries.add(x[i],y[i]);
 	    }
 	    
 	    // Create a Dataset to hold the XSeries.
@@ -120,6 +118,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	    
 	    
 	    
+	    
 	    // Create XYMultipleSeriesRenderer to customize the whole chart
 	    XYMultipleSeriesRenderer mRenderer=new XYMultipleSeriesRenderer();
 	   
@@ -127,12 +126,12 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	    mRenderer.setXTitle("Zeit in Minuten");
 	    mRenderer.setYTitle("Geschwindigkeit in km/h");
 	    mRenderer.setZoomButtonsVisible(true);
-	    mRenderer.setXLabels(0);
-	    mRenderer.setPanEnabled(false);
-	   
+	    mRenderer.setPanEnabled(true, true);
+	    mRenderer.setClickEnabled(false);
+	    mRenderer.setYAxisMax(30.0);
+	    mRenderer.setYAxisMin(0.0);
 	    mRenderer.setShowGrid(true);
-	 
-	    mRenderer.setClickEnabled(true);
+	    
 	   
 	    /*for(int i=0;i<z.length;i++)
 	    {
@@ -148,7 +147,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	    mChart=(GraphicalView)ChartFactory.getLineChartView(getActivity().getBaseContext(), dataset, mRenderer);
 	    
 	    //  Adding click event to the Line Chart.
-	    mChart.setOnClickListener(this);
+	   
 	    
 	    // Add the graphical view mChart object into the Linear layout .
 	    chart_container.addView(mChart);
@@ -157,27 +156,69 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		SeriesSelection series_selection=mChart.getCurrentSeriesAndPoint();
 
-		if(series_selection!=null)
-		{
-			int series_index=series_selection.getSeriesIndex();
+	}
 	
-			String select_series="X Series";
-			if(series_index==0)
-			{
-				select_series="X Series";
-			}else
-			{
-				select_series="Y Series";
-			}
-	
-			String month=mMonth[(int)series_selection.getXValue()];
-	
-			int amount=(int)series_selection.getValue();
-	
-			Toast.makeText(v.getContext(), select_series+"in" + month+":"+amount, Toast.LENGTH_LONG).show();
+	private double gps2m(double lat_a, double lon_a, double lat_b, double lon_b) {
 		
+		double R = 6371*1000; // m
+		double dLat =  Math.toRadians((lat_b - lat_a));
+		double dLon =  Math.toRadians((lon_b - lon_a));
+		double lat1 = Math.toRadians(lat_a);
+		double lat2 = Math.toRadians(lat_b);
+		
+		double a = Math.sin(dLat/2) * 
+				Math.sin(dLat/2) +
+				Math.sin(dLon/2) *
+				Math.sin(dLon/2) * Math.cos(lat1)
+				* Math.cos(lat2);
+		
+		double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1.0-a));
+		
+		double d = R * c;
+		
+		return d;
+		
+	}
+	
+	private ArrayList<StatsPoint> getNewData(){
+		TPH = new TrackPointsHandler(DM.readGPSLogFile(DM.readSettingsFile()));
+		
+		ArrayList<TrackPoint> TPL = TPH.getPointsList();
+		Date parsedDate1 = null;
+		Date parsedDate2 = null;		
+		Timestamp timestamp1 = null;
+		Timestamp timestamp2 = null;
+		int p1 = 0;
+		int p2 = 0;
+		ArrayList<StatsPoint> l = new ArrayList<StatsPoint>();
+		
+		dateFormat = new SimpleDateFormat(TPL.get(0).getTimeFormat());
+		
+		for(int i = 1; i < TPL.size()-1; i++){
+
+			p2 = i;
+			
+			try {
+				parsedDate1 = dateFormat.parse(TPL.get(p1).getDate()+" "+TPL.get(p1).getTime());
+				parsedDate2 = dateFormat.parse(TPL.get(p2).getDate()+" "+TPL.get(p2).getTime());
+				
+				timestamp1 = new Timestamp(parsedDate1.getTime());
+				timestamp2 = new Timestamp(parsedDate2.getTime());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			double pastTime = (timestamp2.getTime() - timestamp1.getTime()) / 1000.0;
+			if(pastTime > 15.0){
+				double m = gps2m(TPL.get(p1).getLat(), TPL.get(p1).getLon(), TPL.get(p2).getLat(), TPL.get(p2).getLon());
+				
+				double kmh = (m/pastTime)*3.6;
+				l.add(new StatsPoint(pastTime,kmh));
+				p1 = p2;
+			}
 		}
+		return l;
 	}
 }

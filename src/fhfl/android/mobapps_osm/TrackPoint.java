@@ -7,6 +7,7 @@ public class TrackPoint{
 	private double Ele = 0.0;
 	private String Date = "empty";
 	private String Time = "empty";
+	private String TimeFormat = "yyyy-MM-dd hh:mm:ss.SSS";
 	
 	public TrackPoint(String XML){
 		passXML(XML);
@@ -45,6 +46,9 @@ public class TrackPoint{
 			stop = s.indexOf("</time>")-1;
 			Time = s.substring(start, stop);
 			
+			if(Time.length() == 8)
+				TimeFormat = "yyyy-MM-dd hh:mm:ss";
+			
 			//Set valid
 			valid = true;
 						
@@ -73,6 +77,10 @@ public class TrackPoint{
 	
 	public boolean getValid(){
 		return valid;
+	}
+	
+	public String getTimeFormat(){
+		return TimeFormat;
 	}
 }
 
