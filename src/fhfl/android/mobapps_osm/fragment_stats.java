@@ -88,7 +88,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	    double xVal = 0.0;
 	    
 	    for(int i =0; i < data.size(); i++){
-	    	y[i] = data.get(i).getSpeed();
+	    	y[i] = Math.round(data.get(i).getSpeed());
 	    	xVal += data.get(i).getTimeOffset();
 	    	x[i] = xVal/60;
 	    } 
