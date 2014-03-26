@@ -18,6 +18,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 public class DataManager {
@@ -183,5 +184,11 @@ public class DataManager {
 				return "ERROR_readStettingsFile";
 			}
 		    
+		}
+		
+		public Boolean fileExistd(String FileName){
+			File f = new File(Environment.getExternalStorageDirectory() + "/GPS_LOGS/" + FileName);
+			Log.d("FilePath", f.getPath() + " " + String.valueOf(f.getName().length()));
+			return f.exists();
 		}
 }

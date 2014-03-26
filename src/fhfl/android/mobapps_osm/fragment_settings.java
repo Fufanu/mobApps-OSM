@@ -1,10 +1,13 @@
 package fhfl.android.mobapps_osm;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,15 +19,20 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class fragment_settings extends Fragment implements OnItemSelectedListener, OnClickListener {
 	private Button btn_deleteFile;
-	private Button btn_saveSettings;
+	private ToggleButton TB_GPS;
+	private ToggleButton TB_INet;
+	private ToggleButton TB_Track;
 	private Spinner DropDown;
 	private DataManager DM;
-	private TextView DisplayFile;
+	
 	private View view;
 	private SettingsContainer settings;
+	
+	//
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,31 +41,37 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		settings = activity.settings;
 		
 		view = inflater.inflate(R.layout.fragment_settings, container, false);
-		DisplayFile = (TextView)view.findViewById(R.id.fSettings_DisplayFileSource);
+		
 		DropDown = (Spinner)view.findViewById(R.id.fSettings_DropDown_Files);
 		DropDown.setOnItemSelectedListener(this);
 		btn_deleteFile = (Button) view.findViewById(R.id.fSettings_Button_DeleteFile);
 		btn_deleteFile.setOnClickListener(this);
-		btn_saveSettings = (Button)view.findViewById(R.id.fSettings_Button_Save);
-		btn_saveSettings.setOnClickListener(this);
+		TB_GPS = (ToggleButton)view.findViewById(R.id.fSettings_Toggle_GPS);
+		TB_GPS.setOnClickListener(this);
+		TB_GPS.setChecked(settings.isGpsOnControl());
+		TB_INet = (ToggleButton)view.findViewById(R.id.fSettings_Toggle_INet);
+		TB_INet.setOnClickListener(this);
+		TB_INet.setChecked(settings.isInternetConnection());
+		TB_Track = (ToggleButton)view.findViewById(R.id.fSettings_Toggle_Track);
+		TB_Track.setOnClickListener(this);
+		TB_Track.setChecked(settings.isGpsTrack());
 		
 		DM = new DataManager();
-		
-		DM.createSettingsFile();
-		//DM.createNewGPSLogFile();
 			
 		refreshDropDown();
 		
-		loadSettings();
+		loadSettingsXML();
 		
-		DisplayFile.setText(DM.readSettingsFile().toString());
+		
+		updateSettingsXML();
+		
 		return view;
 	}
 	
-	private void loadSettings(){
+	private void loadDropDownChange(){
 		
 		for(int i = 0; i < DropDown.getCount(); i++){
-			if(DropDown.getItemAtPosition(i).toString().contains(DM.readSettingsFile().trim())){
+			if(DropDown.getItemAtPosition(i).toString().contains(settings.getCurrentLogFile())){
 				DropDown.setSelection(i);
 				break;
 			}
@@ -69,13 +83,40 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		if (v.getId() ==  R.id.fSettings_Button_DeleteFile)  {
         	
         	DM.deleteGPSLogFile(DropDown.getSelectedItem().toString());
-        	refreshDropDown();       	
-        }
-		else if(v.getId() == R.id.fSettings_Button_Save){
-			DM.rewriteSettingsFile(DropDown.getSelectedItem().toString());
-			DisplayFile.setText(DM.readSettingsFile().toString());
-			settings.reloadTrackPointHandler();
+        	refreshDropDown();
+        	settings.loadOverlayLists();
 		}
+		else if(v.getId() ==  R.id.fSettings_Toggle_GPS){
+			settings.setGpsOnControl(TB_GPS.isChecked());
+		}
+		else if(v.getId() ==  R.id.fSettings_Toggle_INet){
+			settings.setInternetConnection(TB_INet.isChecked());
+		}
+		else if(v.getId() ==  R.id.fSettings_Toggle_Track){
+			if(settings.isGpsOnControl()){
+				settings.setGpsTrack(TB_Track.isChecked());
+				
+				if(TB_Track.isChecked()){
+					File f = DM.createNewGPSLogFile();
+					settings.setCurrentLogFile(f.getName());
+					DropDown.setEnabled(false);
+					btn_deleteFile.setEnabled(false);
+					TB_GPS.setEnabled(false);
+					refreshDropDown();
+				}
+				else
+				{
+					DropDown.setEnabled(true);
+					btn_deleteFile.setEnabled(true);
+					TB_GPS.setEnabled(true);
+				}
+			}
+			else
+			{
+				TB_Track.setChecked(false);
+			}
+		}
+		updateSettingsXML();
 	}
 
 	@Override
@@ -83,7 +124,10 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 			long arg3) {
 		// TODO Auto-generated method stub
 
-		
+		settings.setCurrentLogFile(DropDown.getSelectedItem().toString());
+		Log.d("DropDown", settings.getCurrentLogFile());
+		updateSettingsXML();
+		settings.reloadTrackPointHandler();
 	}
 
 	@Override
@@ -100,5 +144,96 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(view.getContext(),   android.R.layout.simple_spinner_item, Files);
 		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
 		DropDown.setAdapter(spinnerArrayAdapter);
+		
+		loadDropDownChange();
+	}
+	
+	private boolean updateSettingsXML(){
+		DM.createSettingsFile();
+		try{
+			String xml = "";
+			xml += "<CurrentLogFile>" + settings.getCurrentLogFile() +"</CurrentLogFile>\r\n";
+			xml += "<GpsOnControl>" + settings.isGpsOnControl() + "</GpsOnControl>\r\n";
+			xml += "<InternetConnection>" + settings.isInternetConnection() + "</InternetConnection>";
+			
+			DM.rewriteSettingsFile(xml);
+			
+			return true;
+		}
+		catch(Exception e){
+			return false;
+		}
+	}
+	
+	private void loadSettingsXML(){
+		String XML = DM.readSettingsFile();
+		String CurrentLogFile = "";
+		Boolean GpsOnControl = true;
+		Boolean InternetConnection = true;
+		int Start;
+		int Stop;
+		boolean CurrentLogFileValid = false;
+		boolean GpsOnControlValid = false;
+		boolean InternetConnectionValid = false;
+		
+		if(!XML.contains("ERROR_readStettingsFile")){
+			
+			//Parse CurrentLogFile
+			Start = XML.indexOf("<CurrentLogFile>");
+			Stop = XML.indexOf("</CurrentLogFile>");
+			if(Start != -1 && Stop != -1){
+				CurrentLogFile = XML.substring(Start+16, Stop).trim();
+				if(DM.fileExistd(CurrentLogFile)){
+					CurrentLogFileValid = true;
+				}
+			}
+			
+			//Parse GpsOnControl
+			Start = XML.indexOf("<GpsOnControl>");
+			Stop = XML.indexOf("</GpsOnControl>");
+			if(Start != -1 && Stop != -1){
+				try{
+					GpsOnControl = Boolean.valueOf(XML.substring(Start+14, Stop));
+					GpsOnControlValid = true;
+				}
+				catch(Exception e)
+				{
+					
+				}
+			}
+
+			//Parse InternetConnection
+			Start = XML.indexOf("<InternetConnection>");
+			Stop = XML.indexOf("</InternetConnection>");
+			if(Start != -1 && Stop != -1){
+				try{
+					InternetConnection = Boolean.valueOf(XML.substring(Start+20, Stop));
+					InternetConnectionValid = true;
+				}
+				catch(Exception e)
+				{
+					
+				}
+			}
+		}
+		
+		//Speichern
+		if(InternetConnectionValid && CurrentLogFileValid && GpsOnControlValid){
+			settings.setCurrentLogFile(CurrentLogFile);
+			settings.setGpsOnControl(GpsOnControl);
+			settings.setInternetConnection(InternetConnection);
+			Log.d("Settings", "XML korrekt eingelesen");
+			
+			TB_GPS.setChecked(settings.isGpsOnControl());
+			TB_INet.setChecked(settings.isInternetConnection());
+			TB_Track.setChecked(settings.isGpsTrack());
+			
+			loadDropDownChange();
+		}
+		else{
+			Log.d("Settings GPS", String.valueOf(GpsOnControl) + " " + String.valueOf(GpsOnControlValid));
+			Log.d("Settings INet", String.valueOf(InternetConnection) + " " + String.valueOf(InternetConnectionValid));
+			Log.d("Settings File", CurrentLogFile + " " + String.valueOf(CurrentLogFileValid));
+		}
 	}
 }

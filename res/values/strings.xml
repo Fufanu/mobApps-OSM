@@ -13,8 +13,14 @@
 	<!-- Fragment Stats -->
 	<string name="fStats_Button_DeleteFile_Text">löschen</string>
 	
-	<!-- Fragment Settings -->
-	<string name="fSettings_Button_DeleteFile_Text">löschen</string>
-	<string name="fSettings_Button_Save_Text">speichern</string>
+	<!--  Fragment Settings --> 
+  	<string name="fSettings_Button_DeleteFile_Text">löschen</string> 
+  	<string name="fSettings_Toggle_GPS_Text_ON">GPS ON</string> 
+  	<string name="fSettings_Toggle_INet_Text_ON">Internet On</string> 
+  	<string name="fSettings_Toggle_Track_Text_ON">Track On</string> 
+  	<string name="fSettings_Toggle_GPS_Text_OFF">GPS OFF</string> 
+  	<string name="fSettings_Toggle_INet_Text_OFF">Internet OFF</string> 
+  	<string name="fSettings_Toggle_Track_Text_OFF">Track OFF</string> 
+
 
 </resources>

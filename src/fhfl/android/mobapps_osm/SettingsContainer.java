@@ -36,10 +36,12 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	private GeoPoint mapDistancePoint;
 	
-	private boolean internetConnection = false;
+	private boolean internetConnection = true;
 	private boolean mapFollowing = false;
 	private boolean gpsTrack = false;
 	private boolean measure = false;
+	private boolean gpsOnControl = true;
+	private String currentLogFile ="";  // <---- Hier die neuen Punkte rein (Hannes)
 	
 	public SettingsContainer()
 	{
@@ -47,6 +49,7 @@ public class SettingsContainer extends Observable implements Serializable {
 		mapDistanceTrkpList = new TrackPointList();
 		mapTrackDrawList = new DrawObjectList();
 		mapDistanceDrawList = new DrawObjectList();
+		
 		
 		reloadTrackPointHandler();
 		loadOverlayLists();
@@ -137,7 +140,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	public void reloadTrackPointHandler()
 	{
-		TPH = new TrackPointsHandler(DM.readGPSLogFile(DM.readSettingsFile())); 
+		TPH = new TrackPointsHandler(DM.readGPSLogFile(this.getCurrentLogFile())); 
 		TPL = TPH.getPointsList();
 	}
 	
@@ -145,14 +148,17 @@ public class SettingsContainer extends Observable implements Serializable {
 	{
 		mapTrkpList.clear();
 		mapTrackDrawList.clear();
-		for(TrackPoint tp : TPL)
-		{
-			mapTrkpList.add(tp.getPoint());
-			Log.d("GEO", String.valueOf(tp.getPoint()));
+		if(TPL.size() > 0){
+			
+			for(TrackPoint tp : TPL)
+			{
+				mapTrkpList.add(tp.getPoint());
+				Log.d("GEO", String.valueOf(tp.getPoint()));
+			}
+			mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(0), Color.GREEN, "Start", Color.BLACK, 24f);
+			mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1), Color.RED, "Stop", Color.BLACK, 24f);
+			Log.i("MAP","Start: " + mapTrkpList.getGeoPoint(0) + ", Stop: " + mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1));
 		}
-		mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(0), Color.GREEN, "Start", Color.BLACK, 24f);
-		mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1), Color.RED, "Stop", Color.BLACK, 24f);
-		Log.i("MAP","Start: " + mapTrkpList.getGeoPoint(0) + ", Stop: " + mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1));
 	}
 	
 	public boolean isMeasure() {
@@ -161,5 +167,21 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	public void setMeasure(boolean measure) {
 		this.measure = measure;
+	}
+
+	public String getCurrentLogFile() {
+		return currentLogFile;
+	}
+
+	public void setCurrentLogFile(String currentLogFile) {
+		this.currentLogFile = currentLogFile;
+	}
+
+	public boolean isGpsOnControl() {
+		return gpsOnControl;
+	}
+
+	public void setGpsOnControl(boolean gpsOnControl) {
+		this.gpsOnControl = gpsOnControl;
 	}
 }

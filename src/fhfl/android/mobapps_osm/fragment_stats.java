@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,8 +48,9 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	private Handler handler;
 	private GraphicalView mChart;
 	private ProgressDialog progress;
-	
+	//private SettingsContainer settings;
 	private SimpleDateFormat dateFormat;
+	//private MainActivity activity;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -57,11 +59,12 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		view = inflater.inflate(R.layout.fragment_stats, container, false);
 		DM = new DataManager();
 		
+		//activity = (MainActivity) getActivity();
+		//settings = activity.settings;
 		
-		
-		
-		handler = new Handler();
-		handler.postDelayed(runnable, 0);
+		OpenChart();
+		/*handler = new Handler();
+		handler.postDelayed(runnable, 0);*/
 
 		return view;
 	}
@@ -80,6 +83,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		// Define the number of elements you want in the chart.
 	    
 	    ArrayList<StatsPoint> data = getNewData();
+	    Log.d("Size", String.valueOf(data.size()));
 	   
 	    double y[] = new double[data.size()];
 	    double x[] = new double[data.size()];
@@ -182,7 +186,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	}
 	
 	private ArrayList<StatsPoint> getNewData(){
-		TPH = new TrackPointsHandler(DM.readGPSLogFile(DM.readSettingsFile()));
+		TPH = new TrackPointsHandler(DM.readGPSLogFile("FH-_Hafermarkt.gpx"));
 		
 		ArrayList<TrackPoint> TPL = TPH.getPointsList();
 		Date parsedDate1 = null;
@@ -193,7 +197,8 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		int p2 = 0;
 		ArrayList<StatsPoint> l = new ArrayList<StatsPoint>();
 		
-		dateFormat = new SimpleDateFormat(TPL.get(0).getTimeFormat());
+		if(TPL.size() > 0)
+			dateFormat = new SimpleDateFormat(TPL.get(0).getTimeFormat());
 		
 		for(int i = 1; i < TPL.size()-1; i++){
 
@@ -211,7 +216,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 			}
 			
 			double pastTime = (timestamp2.getTime() - timestamp1.getTime()) / 1000.0;
-			if(pastTime > 15.0){
+			if(pastTime > 60.0){
 				double m = gps2m(TPL.get(p1).getLat(), TPL.get(p1).getLon(), TPL.get(p2).getLat(), TPL.get(p2).getLon());
 				
 				double kmh = (m/pastTime)*3.6;
