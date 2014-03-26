@@ -1,6 +1,5 @@
 package fhfl.android.mobapps_osm;
 
-import java.util.ArrayList;
 
 import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IGeoPoint;
@@ -20,7 +19,6 @@ import ecl.Overlays.FhflTrackOverlay;
 import ecl.Overlays.FhflVectorOverlay;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -35,7 +33,6 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 	private SettingsContainer settings;
 	private Context context;
 	private ResourceProxy mapResourceProxy;
-	private ScaleBarOverlay mapScaleBarOverlay;
 	
 	
 	@Override
@@ -73,7 +70,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 		mapView.setMultiTouchControls(true);
 		
 		// ScaleBar Overlay
-		mapScaleBarOverlay = new ScaleBarOverlay(context);
+		ScaleBarOverlay mapScaleBarOverlay = new ScaleBarOverlay(context);
 		mapScaleBarOverlay.setLineWidth(2);
 		mapScaleBarOverlay.setTextSize(20);
 		mapView.getOverlays().add(mapScaleBarOverlay);
@@ -85,21 +82,26 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 		
 		//Trackpoints laden
 		settings.loadOverlayLists();
-		Log.i("MAP", String.valueOf(settings.getMapTrkpList().getLength()) + "Trackpoints in TrackpointList");
+		Log.i("MAP", String.valueOf(settings.getTrkpList().getLength()) + "Trackpoints in TrackpointList");
 		
 		//Trackpoint Overlay
 		FhflTrackOverlay fhflTrackOverlay = new FhflTrackOverlay(mapResourceProxy);
-		fhflTrackOverlay.setDataList(settings.getMapTrkpList());
+		fhflTrackOverlay.setDataList(settings.getTrkpList());
 		mapView.getOverlays().add(fhflTrackOverlay);
+		
+		//Trackpoint Overlay
+		FhflTrackOverlay fhflTrackDistOverlay = new FhflTrackOverlay(mapResourceProxy);
+		fhflTrackDistOverlay.setDataList(settings.getDistanceTrkpList());
+		mapView.getOverlays().add(fhflTrackDistOverlay);
 		
 		// Vector Overlay for Distance
 		FhflVectorOverlay fhflVectorTrackOverlay = new FhflVectorOverlay(mapResourceProxy);
-		fhflVectorTrackOverlay.setDataList(settings.getMapTrackDrawList());
+		fhflVectorTrackOverlay.setDataList(settings.getTrackDrawList());
 		mapView.getOverlays().add(fhflVectorTrackOverlay);
 		
 		// Vector Overlay for Distance
 		FhflVectorOverlay fhflVectorDistOverlay = new FhflVectorOverlay(mapResourceProxy);
-		fhflVectorDistOverlay.setDataList(settings.getMapDistanceDrawList());
+		fhflVectorDistOverlay.setDataList(settings.getDistanceDrawList());
 		mapView.getOverlays().add(fhflVectorDistOverlay);
 		
 		// Event Overlay
@@ -143,21 +145,19 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 		if(settings.isMeasure())
 		{
 			settings.setMeasure(false);
-			settings.getMapDistanceDrawList().addPoint((GeoPoint) point, Color.RED, "Punkt 2", Color.BLACK, 24f);
-			Log.i("MAP", "Punkt1: " + settings.getMapDistancePoint().toString() + ", Punkt2: " + point.toString());
-			// TODO Rechnung und vielleicht Verbindungslinie
-			int a = settings.getMapDistancePoint().distanceTo(point);
-			CharSequence text = "Punkt 1 Koordinaten: " + settings.getMapDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + point.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
-			settings.setDistanceToast(Toast.makeText(context, text, settings.getToastDurationt()));
-			settings.getDistanceToast().show();
-			Log.d("DISTANCE",text.toString());
+			settings.getDistanceDrawList().addPoint((GeoPoint) point, Color.RED, "Punkt 2", Color.BLACK, 24f);
+			settings.getDistanceTrkpList().add((GeoPoint) point);
+			int a = settings.getDistancePoint().distanceTo(point);
+			CharSequence text = "Punkt 1 Koordinaten: " + settings.getDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + point.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
+			Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+			Log.i("MAP","Distance: " + text.toString());
 		}
 		else
 		{
-			settings.getMapDistanceDrawList().clear();
+			settings.getDistanceTrkpList().clear();
+			settings.getDistanceDrawList().clear();
 			settings.setMeasure(true);
-			settings.getMapDistanceDrawList().addPoint((GeoPoint) point, Color.GREEN, "Punkt 1", Color.BLACK, 24f);
-			settings.setMapDistancePoint((GeoPoint) point);
+			settings.setDistancePoint((GeoPoint) point);
 		}
 		settings.getMapView().postInvalidate();
 		return true;
@@ -165,10 +165,10 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 
 	@Override
 	public boolean singleTapUpHelper(IGeoPoint arg0) {
-		Log.d("DEBUG","Kurz gedrückt");
 		if(!settings.isMeasure())
 		{
-			settings.getMapDistanceDrawList().clear();
+			settings.getDistanceTrkpList().clear();
+			settings.getDistanceDrawList().clear();
 			settings.getMapView().postInvalidate();
 		}
 		return true;

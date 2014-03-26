@@ -1,10 +1,10 @@
 package fhfl.android.mobapps_osm;
 
+import org.osmdroid.util.GeoPoint;
+
 public class TrackPoint{
 	private boolean valid = false;
-	private double Lat = 0.0;
-	private double Lon = 0.0;
-	private double Ele = 0.0;
+	private GeoPoint point = null;
 	private String Date = "empty";
 	private String Time = "empty";
 	private String TimeFormat = "yyyy-MM-dd hh:mm:ss.SSS";
@@ -14,6 +14,11 @@ public class TrackPoint{
 	}
 	
 	private void passXML(String XML){
+		
+		double Lat = 0.0;
+		double Lon = 0.0;
+		double Ele = 0.0;
+		
 		if(XML.contains("lat=") && XML.contains("lon=")){
 			String s = XML;
 			int start = 0;
@@ -36,6 +41,8 @@ public class TrackPoint{
 				Ele = Double.parseDouble(s.substring(start, stop));
 			}
 			
+			point = new GeoPoint(Lat, Lon, Ele);
+			
 			// Date extrahieren
 			start = s.indexOf("<time>")+6;
 			stop = s.indexOf("<time>")+16;
@@ -55,16 +62,20 @@ public class TrackPoint{
 		}
 	}
 	
+	public GeoPoint getPoint(){
+		return point;
+	}
+	
 	public double getLat(){
-		return Lat;
+		return point.getLatitudeE6();
 	}
 	
 	public double getLon(){
-		return Lon;
+		return point.getLongitudeE6();
 	}
 	
 	public double getEle(){
-		return Ele;
+		return point.getAltitude();
 	}
 	
 	public String getDate(){

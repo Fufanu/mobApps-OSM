@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class TrackPointsHandler {
 	ArrayList<TrackPoint> TPL;
 	
+	private int length = 0;
+	
 	 public TrackPointsHandler(String XML){
 		 TPL = new ArrayList<TrackPoint>();
 		 passXML(XML);
@@ -35,4 +37,9 @@ public class TrackPointsHandler {
 	 public ArrayList<TrackPoint> getPointsList(){
 		 return TPL;
 	 }
+	 
+	public int getLength() 
+	{
+		return length;
+	}
 }

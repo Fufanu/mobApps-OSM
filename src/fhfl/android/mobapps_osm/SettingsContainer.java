@@ -11,16 +11,11 @@ import org.osmdroid.views.MapView;
 
 import android.graphics.Color;
 import android.util.Log;
-import android.widget.Toast;
 import ecl.Datacontainer.DrawObjectList;
-import ecl.Datacontainer.DrawableList;
 import ecl.Datacontainer.TrackPointList;
 
 public class SettingsContainer extends Observable implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private MapView mapView;
@@ -32,15 +27,14 @@ public class SettingsContainer extends Observable implements Serializable {
 	private static final DataManager DM = new DataManager();
 	private TrackPointsHandler TPH;
 	private ArrayList<TrackPoint> TPL;
-	private TrackPointList mapTrkpList = new TrackPointList();
-	private DrawObjectList mapTrackDrawList = new DrawObjectList();
-	private DrawObjectList mapDistanceDrawList = new DrawObjectList();
+	private TrackPointList mapTrkpList = null;
+	private TrackPointList mapDistanceTrkpList = null;
+	private DrawObjectList mapTrackDrawList = null;
+	private DrawObjectList mapDistanceDrawList = null;
 	
 	private int zoom = 13;
 	
 	private GeoPoint mapDistancePoint;
-	private Toast distanceToast;
-	private int toastDurationt = Toast.LENGTH_LONG;
 	
 	private boolean internetConnection = false;
 	private boolean mapFollowing = false;
@@ -49,107 +43,96 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	public SettingsContainer()
 	{
+		mapTrkpList = new TrackPointList();
+		mapDistanceTrkpList = new TrackPointList();
+		mapTrackDrawList = new DrawObjectList();
+		mapDistanceDrawList = new DrawObjectList();
+		
 		reloadTrackPointHandler();
 		loadOverlayLists();
 	}
 	
-	
-	/**
-	 * @return the mapView
-	 */
 	public MapView getMapView() {
 		return mapView;
 	}
-	/**
-	 * @param mapView the mapView to set
-	 */
+	
 	public void setMapView(MapView mapView) {
 		this.mapView = mapView;
 	}
-	/**
-	 * @return the internetConnection
-	 */
+	
 	public boolean isInternetConnection() {
 		return internetConnection;
 	}
-	/**
-	 * @param internetConnection the internetConnection to set
-	 */
+	
 	public void setInternetConnection(boolean internetConnection) {
 		this.internetConnection = internetConnection;
 		mapView.setUseDataConnection(internetConnection);
 	}
-	/**
-	 * @return the mapFollowing
-	 */
+	
 	public boolean isFollowing() {
 		return mapFollowing;
 	}
-	/**
-	 * @param following the mapFollowing to set
-	 */
+	
 	public void setFollowing(boolean following) {
 		this.mapFollowing = following;
 	}
-	/**
-	 * @return the gpsTrack
-	 */
+	
 	public boolean isGpsTrack() {
 		return gpsTrack;
 	}
-	/**
-	 * @param gpsTrack the gpsTrack to set
-	 */
+	
 	public void setGpsTrack(boolean gpsTrack) {
 		this.gpsTrack = gpsTrack;
 	}
-	/**
-	 * @return the zoom
-	 */
+	
 	public int getZoom() {
 		return zoom;
 	}
-	/**
-	 * @param zoom the zoom to set
-	 */
+	
 	public void setZoom(int zoom) {
 		this.zoom = zoom;
 	}
-	/**
-	 * @return the center
-	 */
+	
 	public GeoPoint getCenter() {
 		return center;
 	}
-	/**
-	 * @param center the center to set
-	 */
+	
 	public void setCenter(GeoPoint center) {
 		this.center = center;
 	}
-	/**
-	 * @return the tileSource
-	 */
+	
 	public ITileSource getTileSource() {
 		return tileSource;
 	}
-	/**
-	 * @return the tPL
-	 */
+	
 	public ArrayList<TrackPoint> getTPList() {
 		return TPL;
 	}
-	/**
-	 * @return the mapIconList
-	 */
-	public DrawObjectList getMapDistanceDrawList() {
+	
+	public DrawObjectList getDistanceDrawList() {
 		return mapDistanceDrawList;
 	}
-	/**
-	 * @return the mapTrkpIconList
-	 */
-	public TrackPointList getMapTrkpList() {
+	
+	public TrackPointList getTrkpList() {
 		return mapTrkpList;
+	}
+	
+	public TrackPointList getDistanceTrkpList() {
+		return mapDistanceTrkpList;
+	}
+	
+	public GeoPoint getDistancePoint() {
+		return mapDistancePoint;
+	}
+	
+	public void setDistancePoint(GeoPoint mapDistancePoint) {
+		this.mapDistancePoint = mapDistancePoint;
+		mapDistanceTrkpList.add(mapDistancePoint);
+		mapDistanceDrawList.addPoint((GeoPoint) mapDistancePoint, Color.GREEN, "Punkt 1", Color.BLACK, 24f);
+	}
+	
+	public DrawObjectList getTrackDrawList() {
+		return mapTrackDrawList;
 	}
 	
 	public void reloadTrackPointHandler()
@@ -164,73 +147,19 @@ public class SettingsContainer extends Observable implements Serializable {
 		mapTrackDrawList.clear();
 		for(TrackPoint tp : TPL)
 		{
-			mapTrkpList.add(new GeoPoint(tp.getLat(), tp.getLon()));
-			Log.d("GEO", String.valueOf(tp.getLat()) + " , " + String.valueOf(tp.getLon()));
+			mapTrkpList.add(tp.getPoint());
+			Log.d("GEO", String.valueOf(tp.getPoint()));
 		}
 		mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(0), Color.GREEN, "Start", Color.BLACK, 24f);
 		mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1), Color.RED, "Stop", Color.BLACK, 24f);
 		Log.i("MAP","Start: " + mapTrkpList.getGeoPoint(0) + ", Stop: " + mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1));
 	}
-	/**
-	 * @return the measure
-	 */
+	
 	public boolean isMeasure() {
 		return measure;
 	}
-	/**
-	 * @param measure the measure to set
-	 */
+	
 	public void setMeasure(boolean measure) {
 		this.measure = measure;
-	}
-	/**
-	 * @return the mapDistancePoint
-	 */
-	public GeoPoint getMapDistancePoint() {
-		return mapDistancePoint;
-	}
-	/**
-	 * @param mapDistancePoint the mapDistancePoint to set
-	 */
-	public void setMapDistancePoint(GeoPoint mapDistancePoint) {
-		this.mapDistancePoint = mapDistancePoint;
-	}
-	/**
-	 * @return the mapTrackDrawList
-	 */
-	public DrawObjectList getMapTrackDrawList() {
-		return mapTrackDrawList;
-	}
-
-
-	/**
-	 * @return the distanceToast
-	 */
-	public Toast getDistanceToast() {
-		return distanceToast;
-	}
-
-
-	/**
-	 * @param distanceToast the distanceToast to set
-	 */
-	public void setDistanceToast(Toast distanceToast) {
-		this.distanceToast = distanceToast;
-	}
-
-
-	/**
-	 * @return the toastDurationt
-	 */
-	public int getToastDurationt() {
-		return toastDurationt;
-	}
-
-
-	/**
-	 * @param toastDurationt the toastDurationt to set
-	 */
-	public void setToastDurationt(int toastDurationt) {
-		this.toastDurationt = toastDurationt;
 	}
 }
