@@ -152,8 +152,8 @@ public class SettingsContainer extends Observable implements Serializable {
 			
 			for(TrackPoint tp : TPL)
 			{
-				mapTrkpList.add(tp.getPoint());
-				Log.d("GEO", String.valueOf(tp.getPoint()));
+				mapTrkpList.add(tp);
+				Log.d("GEO", String.valueOf(tp));
 			}
 			mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(0), Color.GREEN, "Start", Color.BLACK, 24f);
 			mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1), Color.RED, "Stop", Color.BLACK, 24f);

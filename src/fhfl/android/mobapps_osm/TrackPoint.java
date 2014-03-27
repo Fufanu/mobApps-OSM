@@ -2,22 +2,22 @@ package fhfl.android.mobapps_osm;
 
 import org.osmdroid.util.GeoPoint;
 
-public class TrackPoint{
+public class TrackPoint extends GeoPoint{
 	private boolean valid = false;
-	private GeoPoint point = null;
 	private String Date = "empty";
 	private String Time = "empty";
 	private String TimeFormat = "yyyy-MM-dd hh:mm:ss.SSS";
 	
 	public TrackPoint(String XML){
+		
+		super(0,0);	
 		passXML(XML);
+		
 	}
 	
 	private void passXML(String XML){
 		
-		double Lat = 0.0;
-		double Lon = 0.0;
-		double Ele = 0.0;
+		
 		
 		if(XML.contains("lat=") && XML.contains("lon=")){
 			String s = XML;
@@ -27,21 +27,19 @@ public class TrackPoint{
 			// Lat extrahieren
 			start = s.indexOf("lat")+5;
 			stop = s.indexOf("lon")-2;
-			Lat = Double.parseDouble(s.substring(start, stop));
+			this.setLatitudeE6((int)(Double.parseDouble(s.substring(start, stop)) * 1E6));
 			
 			// Lon extrahieren
 			start = s.indexOf("lon")+5;
 			stop = s.indexOf(">")-1;
-			Lon = Double.parseDouble(s.substring(start, stop));
+			this.setLongitudeE6((int)(Double.parseDouble(s.substring(start, stop)) * 1E6));
 			
 			// Ele extrahieren <--- pro trkpt
 			if(s.contains("<ele>")){
 				start = s.indexOf("<ele>")+5;
 				stop = s.indexOf("</ele>");
-				Ele = Double.parseDouble(s.substring(start, stop));
+				this.setAltitude((int)(Double.parseDouble(s.substring(start, stop))));
 			}
-			
-			point = new GeoPoint(Lat, Lon, Ele);
 			
 			// Date extrahieren
 			start = s.indexOf("<time>")+6;
@@ -62,21 +60,6 @@ public class TrackPoint{
 		}
 	}
 	
-	public GeoPoint getPoint(){
-		return point;
-	}
-	
-	public double getLat(){
-		return point.getLatitude();
-	}
-	
-	public double getLon(){
-		return point.getLongitude();
-	}
-	
-	public double getEle(){
-		return point.getAltitude();
-	}
 	
 	public String getDate(){
 		return Date;

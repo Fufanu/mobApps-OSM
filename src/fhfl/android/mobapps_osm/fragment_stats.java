@@ -218,7 +218,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 			
 			double pastTime = (timestamp2.getTime() - timestamp1.getTime()) / 1000.0;
 			if(pastTime > 30.0){
-				double m = gps2m(TPL.get(p1).getLat(), TPL.get(p1).getLon(), TPL.get(p2).getLat(), TPL.get(p2).getLon());
+				double m = gps2m(TPL.get(p1).getLatitude(), TPL.get(p1).getLongitude(), TPL.get(p2).getLatitude(), TPL.get(p2).getLongitude());
 				
 				double kmh = (m/pastTime)*3.6;
 				l.add(new StatsPoint(pastTime,kmh));
