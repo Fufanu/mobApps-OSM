@@ -61,6 +61,9 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		refreshDropDown();		
 		updateSettingsXML();
 		
+		TB_GPS.setChecked(settings.isGpsOnControl());
+		TB_INet.setChecked(settings.isInternetConnection());
+		
 		return view;
 	}
 	
