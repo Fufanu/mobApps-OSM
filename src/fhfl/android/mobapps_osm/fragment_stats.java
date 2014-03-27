@@ -48,9 +48,9 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	private Handler handler;
 	private GraphicalView mChart;
 	private ProgressDialog progress;
-	//private SettingsContainer settings;
+	private SettingsContainer settings;
 	private SimpleDateFormat dateFormat;
-	//private MainActivity activity;
+	private MainActivity activity;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -59,8 +59,8 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		view = inflater.inflate(R.layout.fragment_stats, container, false);
 		DM = new DataManager();
 		
-		//activity = (MainActivity) getActivity();
-		//settings = activity.settings;
+		activity = (MainActivity) getActivity();
+		settings = activity.settings;
 		
 		OpenChart();
 		/*handler = new Handler();
@@ -95,6 +95,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	    	y[i] = Math.round(data.get(i).getSpeed());
 	    	xVal += data.get(i).getTimeOffset();
 	    	x[i] = xVal/60;
+	    	Log.d("Point "+i,"X:"+x[i]+" Y:"+y[i]);
 	    } 
 	    
 	    // Create XY Series for X Series.
@@ -186,7 +187,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	}
 	
 	private ArrayList<StatsPoint> getNewData(){
-		TPH = new TrackPointsHandler(DM.readGPSLogFile("FH-_Hafermarkt.gpx"));
+		TPH = new TrackPointsHandler(DM.readGPSLogFile(settings.getCurrentLogFile()));
 		
 		ArrayList<TrackPoint> TPL = TPH.getPointsList();
 		Date parsedDate1 = null;
@@ -216,7 +217,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 			}
 			
 			double pastTime = (timestamp2.getTime() - timestamp1.getTime()) / 1000.0;
-			if(pastTime > 60.0){
+			if(pastTime > 30.0){
 				double m = gps2m(TPL.get(p1).getLat(), TPL.get(p1).getLon(), TPL.get(p2).getLat(), TPL.get(p2).getLon());
 				
 				double kmh = (m/pastTime)*3.6;

@@ -67,11 +67,11 @@ public class TrackPoint{
 	}
 	
 	public double getLat(){
-		return point.getLatitudeE6();
+		return point.getLatitude();
 	}
 	
 	public double getLon(){
-		return point.getLongitudeE6();
+		return point.getLongitude();
 	}
 	
 	public double getEle(){
