@@ -145,7 +145,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 		if(settings.isMeasure())
 		{
 			settings.setMeasure(false);
-			settings.getDistanceDrawList().addPoint((GeoPoint) point, Color.RED, "Punkt 2", Color.BLACK, 24f);
+			settings.getDistanceDrawList().addPoint((GeoPoint) point, Color.RED, "  Punkt 2", Color.BLACK, 24f);
 			settings.getDistanceTrkpList().add((GeoPoint) point);
 			int a = settings.getDistancePoint().distanceTo(point);
 			CharSequence text = "Punkt 1 Koordinaten: " + settings.getDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + point.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
