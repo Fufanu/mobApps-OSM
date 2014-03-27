@@ -51,7 +51,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		View view = inflater.inflate(R.layout.fragment_map, container, false);
 		TB_Center = (ToggleButton)view.findViewById(R.id.fMapToggleCenter);
 		TB_Center.setOnClickListener(this);
-		TB_Center.setChecked(settings.isGpsOnControl());
+		TB_Center.setChecked(settings.isFollowing());
 		
 		mapViewInit(view);
 		

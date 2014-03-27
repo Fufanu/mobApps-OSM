@@ -6,6 +6,8 @@ import java.util.Observable;
 
 
 
+
+
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
@@ -15,8 +17,9 @@ import android.graphics.Color;
 import android.util.Log;
 import ecl.Datacontainer.DrawObjectList;
 import ecl.Datacontainer.TrackPointList;
+import fhfl.android.mobapps_osm.VariableChanged.VariableChangedListener;
 
-public class SettingsContainer extends Observable implements Serializable {
+public class SettingsContainer extends Observable implements Serializable, VariableChangedListener {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -175,7 +178,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	}
 	
 	public void setCenter(GeoPoint center) {
-		this.center = center;
+		this.center = new GeoPoint(center.getLatitudeE6(), center.getLongitudeE6());
 		Log.d("GEO", String.valueOf(center));
 	}
 	
@@ -264,6 +267,13 @@ public class SettingsContainer extends Observable implements Serializable {
 		
 		TPL.add(p);
 		Log.d("TRPList Elemente:", String.valueOf(TPL.size()));
+	}
+
+	@Override
+	public void onVariableChanged(Object o) {
+		Log.d("SETTINGSLIST", String.valueOf(center.getLatitudeE6()) + " " + center.getLongitudeE6());
+		mapView.getController().setCenter(center);
+		mapView.postInvalidate();
 	}
 	
 }

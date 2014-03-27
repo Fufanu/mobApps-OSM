@@ -1,5 +1,7 @@
 package fhfl.android.mobapps_osm;
 
+import org.osmdroid.util.GeoPoint;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -21,6 +23,8 @@ public class MainActivity extends FragmentActivity {
 	private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000; // in
 																	// Milliseconds
 	protected LocationManager locationManager;
+	private VariableChanged variableChanged = new VariableChanged(null);
+	private Location position;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,7 @@ public class MainActivity extends FragmentActivity {
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 				MINIMUM_TIME_BETWEEN_UPDATES,
 				MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, new MyLocationListener());
+		variableChanged.setVariableChangeListener(settings);
 	}
 
 	private class MyLocationListener implements LocationListener {
@@ -49,7 +54,11 @@ public class MainActivity extends FragmentActivity {
 			Log.d("GPS", message);
 
 			if (settings.isGpsOnControl()) {
-				// Hier center update
+				if(settings.isFollowing()){
+					position = location;
+					settings.setCenter(new GeoPoint((int)position.getLatitude() / 1E6, (int)position.getLongitude() / 1E6));
+					variableChanged.setVariable(position);
+				}
 				
 				if(settings.isGpsTrack()){
 					settings.addtoTPL(new TrackPoint(location.getLatitude(), location.getLongitude())); // <-- Punkt der Liste anhängen	
