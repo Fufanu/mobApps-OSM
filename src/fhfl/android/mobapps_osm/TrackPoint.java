@@ -8,9 +8,9 @@ public class TrackPoint extends GeoPoint{
 	private boolean valid = false;
 	private String Date = "empty";
 	private String Time = "empty";
-	private String TimeFormat = "yyyy-MM-dd hh:mm:ss.SSS";
-	SimpleDateFormat stime = new SimpleDateFormat("kk-mm-ss");
-	SimpleDateFormat sdate = new SimpleDateFormat("dd-MM-yyyy");
+	private String TimeFormat = "yyyy-MM-dd kk:mm:ss.SSS";
+	SimpleDateFormat stime = new SimpleDateFormat("kk:mm:ss");
+	SimpleDateFormat sdate = new SimpleDateFormat("yyyy-MM-dd");
 	public TrackPoint(String XML){
 		
 		super(0,0);	
@@ -18,11 +18,12 @@ public class TrackPoint extends GeoPoint{
 		
 	}
 	
-	public TrackPoint(double lat, double longi)
+	public TrackPoint(double lat, double lon)
 	{
-		super(lat,longi);
-		this.Date = stime.format(Date());
-		this.Date = sdate.format(Date());
+		super(lat,lon);
+		this.Time = stime.format(new java.util.Date());
+		this.Date = sdate.format(new java.util.Date());
+		TimeFormat = "yyyy-MM-dd kk:mm:ss";
 	}
 	
 	private java.util.Date Date() {
@@ -53,7 +54,7 @@ public class TrackPoint extends GeoPoint{
 			if(s.contains("<ele>")){
 				start = s.indexOf("<ele>")+5;
 				stop = s.indexOf("</ele>");
-				this.setAltitude((int)(Double.parseDouble(s.substring(start, stop))));
+				//this.setAltitude((int)(Double.parseDouble(s.substring(start, stop)))); Auf leer prüfen
 			}
 			
 			// Date extrahieren
@@ -67,7 +68,7 @@ public class TrackPoint extends GeoPoint{
 			Time = s.substring(start, stop);
 			
 			if(Time.length() == 8)
-				TimeFormat = "yyyy-MM-dd hh:mm:ss";
+				TimeFormat = "yyyy-MM-dd kk:mm:ss";
 			
 			//Set valid
 			valid = true;

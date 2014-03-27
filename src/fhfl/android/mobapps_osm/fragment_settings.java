@@ -77,6 +77,32 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 			}
 		}	
 	}
+	
+	private void saveDataInFile(){
+
+		String str = "";
+		
+		// Datei Start
+		str += "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>";
+		str += "<gpx version=\"1.1\" creator=\"PH-RB-JE\">"; 
+		str += "<metadata><name>" + settings.getCurrentLogFile()  + "</name><author><name>PH-RB-JE</name></author></metadata>"; 
+		str += "<trk><name>" + settings.getCurrentLogFile() + "</name><desc>Aufgezeichnet mit mobApps-OSM</desc><trkseg>";
+		
+		// Punkte
+		for(TrackPoint p : settings.getTPList()){
+			str += "<trkpt ";
+			str += "lat=\"" + p.getLatitude() + "\" lon=\"" + p.getLongitude() + "\">";
+			str += "<ele></ele>";
+			str += "<time>" + p.getDate() + "T" + p.getTime() + "Z</time>";
+			str += "</trkpt>";
+		}
+		
+		// Ende
+		str += "</trkseg></trk></gpx>";
+		
+		
+		DM.writeToGPSLogFile(settings.getCurrentLogFile(), str);
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -106,6 +132,7 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 				}
 				else
 				{
+					saveDataInFile();
 					DropDown.setEnabled(true);
 					btn_deleteFile.setEnabled(true);
 					TB_GPS.setEnabled(true);

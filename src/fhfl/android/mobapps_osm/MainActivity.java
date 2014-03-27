@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
 public class MainActivity extends FragmentActivity {
 
 	SettingsContainer settings = new SettingsContainer();
@@ -21,7 +20,6 @@ public class MainActivity extends FragmentActivity {
 																		// Meters
 	private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000; // in
 																	// Milliseconds
-
 	protected LocationManager locationManager;
 
 	@Override
@@ -49,19 +47,27 @@ public class MainActivity extends FragmentActivity {
 					"New Location \n Longitude: %1$s \n Latitude: %2$s",
 					location.getLongitude(), location.getLatitude());
 			Log.d("GPS", message);
-			
+
+			if (settings.isGpsOnControl()) {
+				// Hier center update
+				
+				if(settings.isGpsTrack()){
+					settings.addtoTPL(new TrackPoint(location.getLatitude(), location.getLongitude())); // <-- Punkt der Liste anhängen	
+					Log.d("Main", "New GPS Data");
+				}
+			}
 		}
 
 		public void onStatusChanged(String s, int i, Bundle b) {
-			
+
 		}
 
 		public void onProviderDisabled(String s) {
-			
+
 		}
 
 		public void onProviderEnabled(String s) {
-			
+
 		}
 
 	}

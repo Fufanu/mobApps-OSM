@@ -81,8 +81,15 @@ public class fragment_stats extends Fragment implements OnClickListener {
 
 	private void OpenChart() {
 		// Define the number of elements you want in the chart.
-	    
-	    ArrayList<StatsPoint> data = getNewData();
+	    Log.d("Ststs", "bis hier");
+	    /*if(settings.isGpsTrack()){
+	    	ArrayList<StatsPoint> data = getNewDataFromList();
+	    }
+	    else{
+	    	ArrayList<StatsPoint> data = getNewDataFromFile();
+	    }*/
+	    ArrayList<StatsPoint> data = getNewDataFromFile();
+	    	
 	    Log.d("Size", String.valueOf(data.size()));
 	   
 	    double y[] = new double[data.size()];
@@ -186,7 +193,11 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		
 	}
 	
-	private ArrayList<StatsPoint> getNewData(){
+	//private ArrayList<StatsPoint> getNewDataFromList(){
+		//for(TrackPoint p: )
+	//}
+	
+	private ArrayList<StatsPoint> getNewDataFromFile(){
 		TPH = new TrackPointsHandler(DM.readGPSLogFile(settings.getCurrentLogFile()));
 		
 		ArrayList<TrackPoint> TPL = TPH.getPointsList();

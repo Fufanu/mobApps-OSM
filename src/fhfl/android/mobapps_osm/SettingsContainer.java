@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 
+
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.util.GeoPoint;
@@ -42,7 +43,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	private boolean gpsTrack = false;
 	private boolean measure = false;
 	private boolean gpsOnControl = true;
-	private String currentLogFile ="";  // <---- Hier die neuen Punkte rein (Hannes)
+	private String currentLogFile ="";  
 	
 	public SettingsContainer()
 	{
@@ -262,6 +263,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	{
 		
 		TPL.add(p);
+		Log.d("TRPList Elemente:", String.valueOf(TPL.size()));
 	}
 	
 }
