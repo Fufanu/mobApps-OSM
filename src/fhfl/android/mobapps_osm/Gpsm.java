@@ -7,44 +7,52 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
-public class Gpsm extends Fragment implements LocationListener{
+public class Gpsm extends MainActivity implements LocationListener{
 	
 	private SettingsContainer settings;
 	private LocationManager manager;
 	private LocationListener mlocListener;
 	private double lati;
 	private double longi;
-	private MainActivity activity = (MainActivity) getActivity();
 	
-	//standard locationlistenerfunctions
-	public void onProviderDisabled(String provider) 			
-	{
-		Toast.makeText(activity.getApplication(), provider, Toast.LENGTH_LONG).show();
-	}
-	public void onProviderEnabled(String provider) 
-	{
-		Toast.makeText(activity.getApplication(), provider, Toast.LENGTH_LONG).show();
-	}	
-	public void onStatusChanged(String provider, int status, Bundle arg2) 
-	{
-		Toast.makeText(activity.getApplication(), provider + status, Toast.LENGTH_LONG).show();
+	public Gpsm(SettingsContainer s){
+		settings = s;
+		Log.d("Gpsm", "created");
+		manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		mlocListener = new LocationListener(){
+			public void onLocationChanged(Location location) {
+			      // Called when a new location is found by the network location provider.
+			      makeUseOfNewLocation(location);
+			    }
+
+			    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+			    public void onProviderEnabled(String provider) {}
+
+			    public void onProviderDisabled(String provider) {}
+
+		};
+
 	}
 	
-	@Override
-	public void onLocationChanged(Location location) {
-		MainActivity activity = (MainActivity) getActivity();
-		settings = activity.settings;
+
+	
+	
+	public void makeUseOfNewLocation(Location location) {
+		
+		Log.d("Gpsm", "new Data");
 		//gps on
 		if (settings.isGpsOnControl())
 		{
-			manager = (LocationManager) activity.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
 			//gps listener on ...implements LocationListener... 
 			mlocListener = Gpsm.this;
 			//location updates on
 			manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, mlocListener);//5000=5sec, antitoastspam
-			Toast.makeText(activity.getApplication(), "GPS gestartet.", Toast.LENGTH_LONG).show();
+			//Toast.makeText(activity.getApplication(), "GPS gestartet.", Toast.LENGTH_LONG).show();
 			lati = location.getLatitude();
 			longi = location.getLongitude(); 
 			settings.setCenter(new GeoPoint(lati, longi));
@@ -57,7 +65,7 @@ public class Gpsm extends Fragment implements LocationListener{
 			//gps listener off
 			mlocListener = null;
 			manager = null;
-			Toast.makeText(activity.getApplication(), "GPS beendet.", Toast.LENGTH_LONG).show();
+			//Toast.makeText(activity.getApplication(), "GPS beendet.", Toast.LENGTH_LONG).show();
 		}
 	}
 	public double getlongi()
@@ -67,5 +75,41 @@ public class Gpsm extends Fragment implements LocationListener{
 	public double getlati()
 	{
 		return lati;
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		// TODO Auto-generated method stub
+		Log.d("Gpsm", "falsche Methode");
+		
+	}
+
+
+
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		Log.d("Gpsm", "falsche Methode");
+		
+	}
+
+
+
+
+	@Override
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		Log.d("Gpsm", "falsche Methode");
+		
+	}
+
+
+
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
 	}
 }

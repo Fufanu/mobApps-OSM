@@ -31,7 +31,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	private TrackPointList mapDistanceTrkpList = null;
 	private DrawObjectList mapTrackDrawList = null;
 	private DrawObjectList mapDistanceDrawList = null;
-	private Gpsm gpsm;
+
 	private int zoom = 13;
 	
 	private GeoPoint mapDistancePoint;
@@ -54,7 +54,7 @@ public class SettingsContainer extends Observable implements Serializable {
 		loadSettingsXML();
 		reloadTrackPointHandler();
 		loadOverlayLists();
-		gpsm= new Gpsm();
+		
 		
 	}
 	
@@ -174,6 +174,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	public void setCenter(GeoPoint center) {
 		this.center = center;
+		Log.d("GEO", String.valueOf(center));
 	}
 	
 	public ITileSource getTileSource() {
