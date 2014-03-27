@@ -18,7 +18,7 @@ public class SettingsContainer extends Observable implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	private MapView mapView;
+	private MapView mapView = null;
 	private static String[] test = {"http://toolserver.org/tiles/hikebike/"};
 	private static final ITileSource hikeBike = new XYTileSource("OpenStreetMap Hikebikemap.de", null, 9, 15, 256, ".png", test);
 	private ITileSource tileSource = hikeBike;
@@ -45,14 +45,85 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	public SettingsContainer()
 	{
+		
 		mapTrkpList = new TrackPointList();
 		mapDistanceTrkpList = new TrackPointList();
 		mapTrackDrawList = new DrawObjectList();
 		mapDistanceDrawList = new DrawObjectList();
 		
-		
+		loadSettingsXML();
 		reloadTrackPointHandler();
 		loadOverlayLists();
+		
+		// HIER!!!!!!!!!!!!!!!!1
+	}
+	
+	private void loadSettingsXML(){
+		String XML = DM.readSettingsFile();
+		String CurrentLogFile = "";
+		Boolean GpsOnControl = true;
+		Boolean InternetConnection = true;
+		int Start;
+		int Stop;
+		boolean CurrentLogFileValid = false;
+		boolean GpsOnControlValid = false;
+		boolean InternetConnectionValid = false;
+		
+		if(!XML.contains("ERROR_readStettingsFile")){
+			
+			//Parse CurrentLogFile
+			Start = XML.indexOf("<CurrentLogFile>");
+			Stop = XML.indexOf("</CurrentLogFile>");
+			if(Start != -1 && Stop != -1){
+				CurrentLogFile = XML.substring(Start+16, Stop).trim();
+				if(DM.fileExistd(CurrentLogFile)){
+					CurrentLogFileValid = true;
+				}
+			}
+			
+			//Parse GpsOnControl
+			Start = XML.indexOf("<GpsOnControl>");
+			Stop = XML.indexOf("</GpsOnControl>");
+			if(Start != -1 && Stop != -1){
+				try{
+					GpsOnControl = Boolean.valueOf(XML.substring(Start+14, Stop));
+					GpsOnControlValid = true;
+				}
+				catch(Exception e)
+				{
+					
+				}
+			}
+
+			//Parse InternetConnection
+			Start = XML.indexOf("<InternetConnection>");
+			Stop = XML.indexOf("</InternetConnection>");
+			if(Start != -1 && Stop != -1){
+				try{
+					InternetConnection = Boolean.valueOf(XML.substring(Start+20, Stop));
+					InternetConnectionValid = true;
+				}
+				catch(Exception e)
+				{
+					
+				}
+			}
+		}
+		
+		//Speichern
+		if(InternetConnectionValid && CurrentLogFileValid && GpsOnControlValid){
+			this.setCurrentLogFile(CurrentLogFile);
+			this.setGpsOnControl(GpsOnControl);
+			Log.d("fuck", String.valueOf(InternetConnection));
+			this.setInternetConnection(InternetConnection);
+			Log.d("Settings", "XML korrekt eingelesen");
+			
+		}
+		else{
+			Log.d("Settings GPS", String.valueOf(GpsOnControl) + " " + String.valueOf(GpsOnControlValid));
+			Log.d("Settings INet", String.valueOf(InternetConnection) + " " + String.valueOf(InternetConnectionValid));
+			Log.d("Settings File", CurrentLogFile + " " + String.valueOf(CurrentLogFileValid));
+		}
 	}
 	
 	public MapView getMapView() {
@@ -69,7 +140,8 @@ public class SettingsContainer extends Observable implements Serializable {
 	
 	public void setInternetConnection(boolean internetConnection) {
 		this.internetConnection = internetConnection;
-		mapView.setUseDataConnection(internetConnection);
+		if(mapView != null)
+			mapView.setUseDataConnection(internetConnection);
 	}
 	
 	public boolean isFollowing() {

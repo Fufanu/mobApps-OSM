@@ -58,11 +58,7 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		
 		DM = new DataManager();
 			
-		refreshDropDown();
-		
-		loadSettingsXML();
-		
-		
+		refreshDropDown();		
 		updateSettingsXML();
 		
 		return view;
@@ -165,75 +161,5 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		}
 	}
 	
-	private void loadSettingsXML(){
-		String XML = DM.readSettingsFile();
-		String CurrentLogFile = "";
-		Boolean GpsOnControl = true;
-		Boolean InternetConnection = true;
-		int Start;
-		int Stop;
-		boolean CurrentLogFileValid = false;
-		boolean GpsOnControlValid = false;
-		boolean InternetConnectionValid = false;
-		
-		if(!XML.contains("ERROR_readStettingsFile")){
-			
-			//Parse CurrentLogFile
-			Start = XML.indexOf("<CurrentLogFile>");
-			Stop = XML.indexOf("</CurrentLogFile>");
-			if(Start != -1 && Stop != -1){
-				CurrentLogFile = XML.substring(Start+16, Stop).trim();
-				if(DM.fileExistd(CurrentLogFile)){
-					CurrentLogFileValid = true;
-				}
-			}
-			
-			//Parse GpsOnControl
-			Start = XML.indexOf("<GpsOnControl>");
-			Stop = XML.indexOf("</GpsOnControl>");
-			if(Start != -1 && Stop != -1){
-				try{
-					GpsOnControl = Boolean.valueOf(XML.substring(Start+14, Stop));
-					GpsOnControlValid = true;
-				}
-				catch(Exception e)
-				{
-					
-				}
-			}
-
-			//Parse InternetConnection
-			Start = XML.indexOf("<InternetConnection>");
-			Stop = XML.indexOf("</InternetConnection>");
-			if(Start != -1 && Stop != -1){
-				try{
-					InternetConnection = Boolean.valueOf(XML.substring(Start+20, Stop));
-					InternetConnectionValid = true;
-				}
-				catch(Exception e)
-				{
-					
-				}
-			}
-		}
-		
-		//Speichern
-		if(InternetConnectionValid && CurrentLogFileValid && GpsOnControlValid){
-			settings.setCurrentLogFile(CurrentLogFile);
-			settings.setGpsOnControl(GpsOnControl);
-			settings.setInternetConnection(InternetConnection);
-			Log.d("Settings", "XML korrekt eingelesen");
-			
-			TB_GPS.setChecked(settings.isGpsOnControl());
-			TB_INet.setChecked(settings.isInternetConnection());
-			TB_Track.setChecked(settings.isGpsTrack());
-			
-			loadDropDownChange();
-		}
-		else{
-			Log.d("Settings GPS", String.valueOf(GpsOnControl) + " " + String.valueOf(GpsOnControlValid));
-			Log.d("Settings INet", String.valueOf(InternetConnection) + " " + String.valueOf(InternetConnectionValid));
-			Log.d("Settings File", CurrentLogFile + " " + String.valueOf(CurrentLogFileValid));
-		}
-	}
+	
 }
