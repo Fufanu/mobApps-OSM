@@ -1,5 +1,7 @@
 package fhfl.android.mobapps_osm;
 
+import java.text.SimpleDateFormat;
+
 import org.osmdroid.util.GeoPoint;
 
 public class TrackPoint extends GeoPoint{
@@ -7,7 +9,8 @@ public class TrackPoint extends GeoPoint{
 	private String Date = "empty";
 	private String Time = "empty";
 	private String TimeFormat = "yyyy-MM-dd hh:mm:ss.SSS";
-	
+	SimpleDateFormat stime = new SimpleDateFormat("kk-mm-ss");
+	SimpleDateFormat sdate = new SimpleDateFormat("dd-MM-yyyy");
 	public TrackPoint(String XML){
 		
 		super(0,0);	
@@ -15,6 +18,18 @@ public class TrackPoint extends GeoPoint{
 		
 	}
 	
+	public TrackPoint(double lat, double longi)
+	{
+		super(lat,longi);
+		this.Date = stime.format(Date());
+		this.Date = sdate.format(Date());
+	}
+	
+	private java.util.Date Date() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private void passXML(String XML){
 		
 		

@@ -31,7 +31,7 @@ public class SettingsContainer extends Observable implements Serializable {
 	private TrackPointList mapDistanceTrkpList = null;
 	private DrawObjectList mapTrackDrawList = null;
 	private DrawObjectList mapDistanceDrawList = null;
-	
+	private Gpsm gpsm;
 	private int zoom = 13;
 	
 	private GeoPoint mapDistancePoint;
@@ -54,8 +54,8 @@ public class SettingsContainer extends Observable implements Serializable {
 		loadSettingsXML();
 		reloadTrackPointHandler();
 		loadOverlayLists();
+		gpsm= new Gpsm();
 		
-		// HIER!!!!!!!!!!!!!!!!1
 	}
 	
 	private void loadSettingsXML(){
@@ -256,4 +256,10 @@ public class SettingsContainer extends Observable implements Serializable {
 	public void setGpsOnControl(boolean gpsOnControl) {
 		this.gpsOnControl = gpsOnControl;
 	}
+	public void addtoTPL(TrackPoint p)
+	{
+		
+		TPL.add(p);
+	}
+	
 }
