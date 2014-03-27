@@ -25,14 +25,17 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
-public class fragment_map extends Fragment implements MapEventsReceiver {
+public class fragment_map extends Fragment implements MapEventsReceiver, OnClickListener {
 	
 	private SettingsContainer settings;
 	private Context context;
 	private ResourceProxy mapResourceProxy;
+	private ToggleButton TB_Center;
 	
 	
 	@Override
@@ -46,6 +49,9 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 		MainActivity activity = (MainActivity) getActivity();
 		settings = activity.settings;
 		View view = inflater.inflate(R.layout.fragment_map, container, false);
+		TB_Center = (ToggleButton)view.findViewById(R.id.fMapToggleCenter);
+		TB_Center.setOnClickListener(this);
+		TB_Center.setChecked(settings.isGpsOnControl());
 		
 		mapViewInit(view);
 		
@@ -118,8 +124,8 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 		{
 			@Override
 			public boolean onScroll(ScrollEvent e) {
-				// TODO Auto-generated method stub
-		        //Log.i("zoom", e.toString());
+				if(!settings.isFollowing())
+					settings.setCenter((GeoPoint) mapView.getMapCenter());
 				return false;
 			}
 
@@ -172,5 +178,13 @@ public class fragment_map extends Fragment implements MapEventsReceiver {
 			settings.getMapView().postInvalidate();
 		}
 		return true;
+	}
+
+	@Override
+	public void onClick(View v) {
+		if(v.getId() ==  R.id.fMapToggleCenter){
+			settings.setFollowing(TB_Center.isChecked());
+		}
+		
 	}
 }

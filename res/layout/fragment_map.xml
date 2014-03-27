@@ -10,4 +10,15 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent" />
 
+	<ToggleButton
+	    android:id="@+id/fMapToggleCenter"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true"
+	    android:layout_marginBottom="16dp"
+	    android:layout_marginRight="17dp"
+	    android:textOff="@string/fMap_Toggle_Center_Text_OFF"
+        android:textOn="@string/fMap_Toggle_Center_Text_ON" />
+
 </RelativeLayout>
