@@ -64,6 +64,7 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		TB_GPS.setChecked(settings.isGpsOnControl());
 		TB_INet.setChecked(settings.isInternetConnection());
 		
+		
 		return view;
 	}
 	
