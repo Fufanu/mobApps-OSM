@@ -20,7 +20,11 @@
   	<string name="fSettings_Toggle_Track_Text_ON">Track On</string> 
   	<string name="fSettings_Toggle_GPS_Text_OFF">GPS OFF</string> 
   	<string name="fSettings_Toggle_INet_Text_OFF">Internet OFF</string> 
-  	<string name="fSettings_Toggle_Track_Text_OFF">Track OFF</string> 
+  	<string name="fSettings_Toggle_Track_Text_OFF">Track OFF</string>
+
+  	<!--  Fragment Map -->
+  	<string name="fMap_Toggle_Center_Text_ON">Center</string>
+  	<string name="fMap_Toggle_Center_Text_OFF">Center</string>
 
 
 </resources>
