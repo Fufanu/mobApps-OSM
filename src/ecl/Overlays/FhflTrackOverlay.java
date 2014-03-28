@@ -63,11 +63,18 @@ public class FhflTrackOverlay extends Overlay {
 					if (i == 1) {
 						point.setColor(Color.GREEN);
 						arg0.drawCircle(p1.x, p1.y, 6, point);
-					} else if (i == trkList.getLength() - 1) {
+					}
+					if (i == trkList.getLength() -1) {
 						point.setColor(Color.RED);
-						arg0.drawCircle(p1.x, p1.y, 6, point);
+						arg0.drawCircle(p2.x, p2.y, 6, point);
 					}
 				}
+			} else if (trkList.getLength() == 1) // nur wenn ein Trackpoint vorhanden
+			{
+				Point p1 = new Point();
+				p1 = projection.toPixels(trkList.getGeoPoint(0), p1);
+				point.setColor(Color.GREEN);
+				arg0.drawCircle(p1.x, p1.y, 6, point);
 			}
 		} else
 			Log.v(null, "   shadow");

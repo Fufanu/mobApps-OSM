@@ -17,7 +17,7 @@ public class TrackPointsHandler {
 		 int start = 0;
 		 int stop = 0;
 
-		 DataManager DM = new DataManager();
+		 //DataManager DM = new DataManager();
 		 //Trackpoints suchen
 		 while(start >= 0 && stop >= 0){
 			 //Trackpoint finden

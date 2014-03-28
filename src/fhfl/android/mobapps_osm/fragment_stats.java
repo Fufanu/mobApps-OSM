@@ -52,12 +52,15 @@ public class fragment_stats extends Fragment implements OnClickListener {
 	private SettingsContainer settings;
 	private SimpleDateFormat dateFormat;
 	private MainActivity activity;
+	private TextView Meter; 
+	private double m = 0.0;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		view = inflater.inflate(R.layout.fragment_stats, container, false);
+		Meter = (TextView)view.findViewById(R.id.fStats_meter);
 		DM = new DataManager();
 
 		activity = (MainActivity) getActivity();
@@ -81,6 +84,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 
 		double xVal = 0.0;
 		double d = 0.0;
+		
 
 		for (int i = 0; i < data.size(); i++) {
 			y[i] = Math.round(data.get(i).getSpeed());
@@ -88,6 +92,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 			x[i] = xVal / 60;
 			Log.d("Point " + i, "X:" + x[i] + " Y:" + y[i]);
 			d += data.get(i).getSpeed();
+			
 		}
 
 		// Create XY Series for X Series.
@@ -180,6 +185,20 @@ public class fragment_stats extends Fragment implements OnClickListener {
 					.getCurrentLogFile()));
 			TPL = TPH.getPointsList();
 		}
+		
+		//Meter addieren
+		TrackPoint tmpPoint = null;
+		for(TrackPoint p : TPL){
+			if(tmpPoint != null)
+				m += tmpPoint.distanceTo(p);
+			tmpPoint = p;
+		}
+		
+		if(m > 1000)
+			Meter.setText("Strecke: "+String.valueOf(m/1000) + "km");
+		else
+			Meter.setText("Strecke: "+String.valueOf(m)+ "m");
+		
 
 		Date parsedDate1 = null;
 		Date parsedDate2 = null;

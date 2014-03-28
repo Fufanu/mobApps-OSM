@@ -5,20 +5,15 @@ import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.MapEventsReceiver;
-import org.osmdroid.events.DelayedMapListener;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.util.ResourceProxyImpl;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 
-import ecl.Overlays.FhflTrackOverlay;
-import ecl.Overlays.FhflVectorOverlay;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import ecl.Overlays.FhflTrackOverlay;
 
 public class fragment_map extends Fragment implements MapEventsReceiver, OnClickListener {
 	
@@ -82,28 +78,28 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		mapView.getOverlays().add(mapScaleBarOverlay);
 		
 		//Compass Overlay
-		//CompassOverlay mapCompassOverlay = new CompassOverlay(context, mapView);
-		//mapCompassOverlay.enableCompass();
-		//mapView.getOverlays().add(mapCompassOverlay);
+		CompassOverlay mapCompassOverlay = new CompassOverlay(context, mapView);
+		mapCompassOverlay.enableCompass();
+		mapView.getOverlays().add(mapCompassOverlay);
 		
 		//Trackpoints laden
 		settings.loadOverlayLists();
 		Log.i("MAP", String.valueOf(settings.getTrkpList().getLength()) + "Trackpoints in TrackpointList");
 		
-		//Trackpoint Overlay
+		//Trackpoint Overlay for Tracking
 		FhflTrackOverlay fhflTrackOverlay = new FhflTrackOverlay(mapResourceProxy);
 		fhflTrackOverlay.setDataList(settings.getTrkpList());
 		mapView.getOverlays().add(fhflTrackOverlay);
 		
-		//Trackpoint Overlay
+		//Trackpoint Overlay for Distance
 		FhflTrackOverlay fhflTrackDistOverlay = new FhflTrackOverlay(mapResourceProxy);
 		fhflTrackDistOverlay.setDataList(settings.getDistanceTrkpList());
 		mapView.getOverlays().add(fhflTrackDistOverlay);
 		
-		// Vector Overlay for Distance
-		FhflVectorOverlay fhflVectorDistOverlay = new FhflVectorOverlay(mapResourceProxy);
-		fhflVectorDistOverlay.setDataList(settings.getDistanceDrawList());
-		mapView.getOverlays().add(fhflVectorDistOverlay);
+		//Trackpoint Overlay for Location
+		FhflTrackOverlay fhflTrackLocationOverlay = new FhflTrackOverlay(mapResourceProxy);
+		fhflTrackLocationOverlay.setDataList(settings.getMapLocationTrkpList());
+		mapView.getOverlays().add(fhflTrackLocationOverlay);
 		
 		// Event Overlay
 		MapEventsOverlay mapEventOverlay = new MapEventsOverlay(this.getActivity(), (MapEventsReceiver) this);
@@ -136,33 +132,45 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 			}
 		 };
 		 
-		 mapView.setMapListener(new DelayedMapListener(mapListener, 1000 ));
 		 
 		 mapView.postInvalidate();
 	}
 
 	@Override
 	public boolean longPressHelper(IGeoPoint point) {
-		TrackPoint tmpPoint = new TrackPoint(point.getLatitudeE6(), point.getLongitudeE6());
-		if(settings.isMeasure())
-		{
-			settings.setMeasure(false);
-			settings.getDistanceDrawList().addPoint(tmpPoint, Color.RED, "  Punkt 2", Color.BLACK, 24f);
-			settings.getDistanceTrkpList().add(tmpPoint);
-			int a = settings.getDistancePoint().distanceTo(tmpPoint);
-			CharSequence text = "Punkt 1 Koordinaten: " + settings.getDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + tmpPoint.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
-			Toast.makeText(context, text, Toast.LENGTH_LONG).show();
-			Log.i("MAP","Distance: " + text.toString());
+		try{
+			TrackPoint tmpPoint = new TrackPoint(point.getLatitudeE6(), point.getLongitudeE6());
+			if(settings.isMeasure())
+			{
+				settings.setMeasure(false);
+				settings.getDistanceTrkpList().add(tmpPoint);
+				double a = settings.getDistancePoint().distanceTo(tmpPoint);
+				String distanz;
+				if(a > 1000)
+				{
+					distanz = String.valueOf(a/1000) + "km";
+				}
+				else
+				{
+					distanz = String.valueOf(a) + "m";
+				}
+				CharSequence text = "Punkt 1 Koordinaten: " + settings.getDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + tmpPoint.toString() + "\n" + "Distanz: " + distanz;
+				Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+				Log.i("MAP","Distance: " + text.toString());
+			}
+			else
+			{
+				settings.getDistanceTrkpList().clear();
+				settings.setMeasure(true);
+				settings.setDistancePoint(tmpPoint);
+			}
+			settings.getMapView().postInvalidate();
+			return true;
 		}
-		else
+		catch(Exception e)
 		{
-			settings.getDistanceTrkpList().clear();
-			settings.getDistanceDrawList().clear();
-			settings.setMeasure(true);
-			settings.setDistancePoint(tmpPoint);
+			return false;
 		}
-		settings.getMapView().postInvalidate();
-		return true;
 	}
 
 	@Override
@@ -170,7 +178,6 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		if(!settings.isMeasure())
 		{
 			settings.getDistanceTrkpList().clear();
-			settings.getDistanceDrawList().clear();
 			settings.getMapView().postInvalidate();
 		}
 		return true;
@@ -180,7 +187,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 	public void onClick(View v) {
 		if(v.getId() ==  R.id.fMapToggleCenter){
 			settings.setFollowing(TB_Center.isChecked());
+			settings.getMapView().postInvalidate();
 		}
-		
 	}
 }

@@ -10,12 +10,9 @@ import java.util.Observable;
 
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
-import android.graphics.Color;
 import android.util.Log;
-import ecl.Datacontainer.DrawObjectList;
 import ecl.Datacontainer.TrackPointList;
 import fhfl.android.mobapps_osm.VariableChanged.VariableChangedListener;
 
@@ -32,19 +29,19 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	private static final DataManager DM = new DataManager();
 	private TrackPointsHandler TPH;
 	private ArrayList<TrackPoint> TPL;
-	private TrackPointList mapTrkpList = null;
-	private TrackPointList mapDistanceTrkpList = null;
-	private DrawObjectList mapDistanceDrawList = null;
+	private TrackPointList mapTrkpList = null;					//Liste der Wegpunkte für die Darstellung in der Karte
+	private TrackPointList mapDistanceTrkpList = null;			//Zwei Punkte für die Darstellung der Distanzmessung für die Darstellung in der Karte
+	private TrackPointList mapLocationTrkpList = null;			//Nur einen Eintrag mit der aktuellen Position für die Darstellung in der Karte
 
 	private int zoom = 13;
 	
 	private TrackPoint mapDistancePoint;
 	
-	private boolean internetConnection = true;
-	private boolean mapFollowing = false;
-	private boolean gpsTrack = false;
-	private boolean measure = false;
-	private boolean gpsOnControl = true;
+	private boolean internetConnection = true;					//Internet on/off
+	private boolean mapFollowing = false;						//Zentrierung on/off
+	private boolean gpsTrack = false;							//Tracking on/off
+	private boolean measure = false;							//Distanz messen
+	private boolean gpsOnControl = true;						//GPS on /off
 	private String currentLogFile ="";  
 	
 	public SettingsContainer()
@@ -52,7 +49,8 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 		
 		mapTrkpList = new TrackPointList();
 		mapDistanceTrkpList = new TrackPointList();
-		mapDistanceDrawList = new DrawObjectList();
+		mapLocationTrkpList = new TrackPointList();
+		mapLocationTrkpList.add(center);
 		
 		loadSettingsXML();
 		reloadTrackPointHandler();
@@ -188,10 +186,6 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 		return TPL;
 	}
 	
-	public DrawObjectList getDistanceDrawList() {
-		return mapDistanceDrawList;
-	}
-	
 	public TrackPointList getTrkpList() {
 		return mapTrkpList;
 	}
@@ -207,7 +201,6 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	public void setDistancePoint(TrackPoint mapDistancePoint) {
 		this.mapDistancePoint = mapDistancePoint;
 		mapDistanceTrkpList.add(mapDistancePoint);
-		mapDistanceDrawList.addPoint((TrackPoint) mapDistancePoint, Color.GREEN, "Punkt 1", Color.BLACK, 24f);
 	}
 	
 	public void reloadTrackPointHandler()
@@ -263,11 +256,11 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	public void onVariableChanged(Object o) {
 		Log.d("SETTINGSLIST", String.valueOf(center.getLatitudeE6()) + " " + center.getLongitudeE6());
 		mapView.getController().setCenter(center);
-		if(isGpsTrack()){
-			mapTrkpList.add(TPL.get(TPL.size()-1));
-		}
+		loadOverlayLists();
 		mapView.postInvalidate();
 		
 	}
-	
+	public TrackPointList getMapLocationTrkpList() {
+		return mapLocationTrkpList;
+	}
 }

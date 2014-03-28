@@ -1,12 +1,12 @@
 package fhfl.android.mobapps_osm;
 
+
 import org.osmdroid.util.GeoPoint;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -48,24 +48,21 @@ public class MainActivity extends FragmentActivity {
 	private class MyLocationListener implements LocationListener {
 
 		public void onLocationChanged(Location location) {
-			String message = String.format(
-					"New Location \n Longitude: %1$s \n Latitude: %2$s",
-					location.getLongitude(), location.getLatitude());
-			Log.d("GPS", message);
-
-			if (settings.isGpsOnControl()) {				
+			//wird geprüft ob GPS aktiv ist
+			if (settings.isGpsOnControl()) {
+				position = location;
+				settings.getMapLocationTrkpList().clear();
+				settings.getMapLocationTrkpList().add(new TrackPoint((int)(location.getLatitude() * 1000000),(int)(location.getLongitude() * 1000000)));
 				if(settings.isGpsTrack()){
 					settings.addtoTPL(new TrackPoint((int)(location.getLatitude() * 1000000),(int)(location.getLongitude() * 1000000))); // <-- Punkt der Liste anhängen	
-					Log.d("Main", "New GPS Data");
+					Log.i("Main", "New GPS Data");
 				}
 				
 				if(settings.isFollowing()){
-					position = location;
 					settings.setCenter(new TrackPoint((int)(location.getLatitude() * 1000000),(int)(location.getLongitude() * 1000000)));
-					//settings.setCenter(new TrackPoint((int)position.getLatitude() / 1E6, (int)position.getLongitude() / 1E6));
-					Log.d("MainAct GPS: ", String.valueOf((int)(location.getLatitude() * 1000000)) + " " + String.valueOf((int)(location.getLongitude() * 1000000)));
-					variableChanged.setVariable(position);
+					Log.i("MainAct GPS: ", String.valueOf((int)(location.getLatitude() * 1000000)) + " " + String.valueOf((int)(location.getLongitude() * 1000000)));
 				}
+				variableChanged.setVariable(position);
 			}
 		}
 
@@ -93,26 +90,31 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle item selection
-
-		Fragment newFragment;
-
-		if (item.getItemId() == R.id.Menue_SwitchButton_Map) {
-			newFragment = new fragment_map();
-		} else if (item.getItemId() == R.id.Menue_SwitchButton_Settings) {
-			newFragment = new fragment_settings();
-		} else if (item.getItemId() == R.id.Menue_SwitchButton_Stats) {
-			newFragment = new fragment_stats();
-		} else {
-			newFragment = new fragment_map();
+		try{
+			Fragment newFragment;
+	
+			if (item.getItemId() == R.id.Menue_SwitchButton_Map) {
+				newFragment = new fragment_map();
+			} else if (item.getItemId() == R.id.Menue_SwitchButton_Settings) {
+				newFragment = new fragment_settings();
+			} else if (item.getItemId() == R.id.Menue_SwitchButton_Stats) {
+				newFragment = new fragment_stats();
+			} else {
+				newFragment = new fragment_map();
+			}
+	
+			FragmentTransaction transaction = getSupportFragmentManager()
+					.beginTransaction();
+			transaction.replace(R.id.fragment_place, newFragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+	
+			return true;
 		}
-
-		FragmentTransaction transaction = getSupportFragmentManager()
-				.beginTransaction();
-		transaction.replace(R.id.fragment_place, newFragment);
-		transaction.addToBackStack(null);
-		transaction.commit();
-
-		return true;
+		catch(Exception e)
+		{
+			return false;
+		}
 	}
 
 }

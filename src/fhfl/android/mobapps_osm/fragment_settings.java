@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,8 +16,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class fragment_settings extends Fragment implements OnItemSelectedListener, OnClickListener {
@@ -65,7 +62,10 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		updateSettingsXML();
 		
 		TB_GPS.setChecked(settings.isGpsOnControl());
+		TB_GPS.setEnabled(!settings.isGpsTrack());
 		TB_INet.setChecked(settings.isInternetConnection());
+		btn_deleteFile.setEnabled(!settings.isGpsTrack());
+		DropDown.setEnabled(!settings.isGpsTrack());
 		
 		
 		return view;
@@ -105,6 +105,7 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		
 		
 		DM.writeToGPSLogFile(settings.getCurrentLogFile(), str);
+		refreshDropDown();
 	}
 
 	@Override
