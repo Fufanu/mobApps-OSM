@@ -56,7 +56,7 @@ public class MainActivity extends FragmentActivity {
 			if (settings.isGpsOnControl()) {
 				if(settings.isFollowing()){
 					position = location;
-					settings.setCenter(new GeoPoint((int)position.getLatitude() / 1E6, (int)position.getLongitude() / 1E6));
+					settings.setCenter(new TrackPoint((int)position.getLatitude() / 1E6, (int)position.getLongitude() / 1E6));
 					variableChanged.setVariable(position);
 				}
 				

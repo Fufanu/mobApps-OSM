@@ -101,11 +101,6 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		mapView.getOverlays().add(fhflTrackDistOverlay);
 		
 		// Vector Overlay for Distance
-		FhflVectorOverlay fhflVectorTrackOverlay = new FhflVectorOverlay(mapResourceProxy);
-		fhflVectorTrackOverlay.setDataList(settings.getTrackDrawList());
-		mapView.getOverlays().add(fhflVectorTrackOverlay);
-		
-		// Vector Overlay for Distance
 		FhflVectorOverlay fhflVectorDistOverlay = new FhflVectorOverlay(mapResourceProxy);
 		fhflVectorDistOverlay.setDataList(settings.getDistanceDrawList());
 		mapView.getOverlays().add(fhflVectorDistOverlay);
@@ -125,7 +120,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 			@Override
 			public boolean onScroll(ScrollEvent e) {
 				if(!settings.isFollowing())
-					settings.setCenter((GeoPoint) mapView.getMapCenter());
+					settings.setCenter((TrackPoint) mapView.getMapCenter());
 				return false;
 			}
 
@@ -148,13 +143,14 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 
 	@Override
 	public boolean longPressHelper(IGeoPoint point) {
+		TrackPoint tmpPoint = new TrackPoint(point.getLatitude(), point.getLongitude());
 		if(settings.isMeasure())
 		{
 			settings.setMeasure(false);
-			settings.getDistanceDrawList().addPoint((GeoPoint) point, Color.RED, "  Punkt 2", Color.BLACK, 24f);
-			settings.getDistanceTrkpList().add((GeoPoint) point);
-			int a = settings.getDistancePoint().distanceTo(point);
-			CharSequence text = "Punkt 1 Koordinaten: " + settings.getDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + point.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
+			settings.getDistanceDrawList().addPoint(tmpPoint, Color.RED, "  Punkt 2", Color.BLACK, 24f);
+			settings.getDistanceTrkpList().add(tmpPoint);
+			int a = settings.getDistancePoint().distanceTo(tmpPoint);
+			CharSequence text = "Punkt 1 Koordinaten: " + settings.getDistancePoint().toString() + "\n" + "Punkt 2 Koordinaten: " + tmpPoint.toString() + "\n" + "Distanz: " + String.valueOf(a) + "m";
 			Toast.makeText(context, text, Toast.LENGTH_LONG).show();
 			Log.i("MAP","Distance: " + text.toString());
 		}
@@ -163,7 +159,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 			settings.getDistanceTrkpList().clear();
 			settings.getDistanceDrawList().clear();
 			settings.setMeasure(true);
-			settings.setDistancePoint((GeoPoint) point);
+			settings.setDistancePoint(tmpPoint);
 		}
 		settings.getMapView().postInvalidate();
 		return true;

@@ -27,19 +27,18 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	private static String[] test = {"http://toolserver.org/tiles/hikebike/"};
 	private static final ITileSource hikeBike = new XYTileSource("OpenStreetMap Hikebikemap.de", null, 9, 15, 256, ".png", test);
 	private ITileSource tileSource = hikeBike;
-	private GeoPoint center = new GeoPoint(54.775139, 9.452691); //vorläufig für Standort bis GPS läuft
+	private TrackPoint center = new TrackPoint(54.775139, 9.452691); //vorläufig für Standort bis GPS läuft
 	
 	private static final DataManager DM = new DataManager();
 	private TrackPointsHandler TPH;
 	private ArrayList<TrackPoint> TPL;
 	private TrackPointList mapTrkpList = null;
 	private TrackPointList mapDistanceTrkpList = null;
-	private DrawObjectList mapTrackDrawList = null;
 	private DrawObjectList mapDistanceDrawList = null;
 
 	private int zoom = 13;
 	
-	private GeoPoint mapDistancePoint;
+	private TrackPoint mapDistancePoint;
 	
 	private boolean internetConnection = true;
 	private boolean mapFollowing = false;
@@ -53,7 +52,6 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 		
 		mapTrkpList = new TrackPointList();
 		mapDistanceTrkpList = new TrackPointList();
-		mapTrackDrawList = new DrawObjectList();
 		mapDistanceDrawList = new DrawObjectList();
 		
 		loadSettingsXML();
@@ -173,12 +171,12 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 		this.zoom = zoom;
 	}
 	
-	public GeoPoint getCenter() {
+	public TrackPoint getCenter() {
 		return center;
 	}
 	
-	public void setCenter(GeoPoint center) {
-		this.center = new GeoPoint(center.getLatitudeE6(), center.getLongitudeE6());
+	public void setCenter(TrackPoint center) {
+		this.center = center;
 		Log.d("GEO", String.valueOf(center));
 	}
 	
@@ -202,18 +200,14 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 		return mapDistanceTrkpList;
 	}
 	
-	public GeoPoint getDistancePoint() {
+	public TrackPoint getDistancePoint() {
 		return mapDistancePoint;
 	}
 	
-	public void setDistancePoint(GeoPoint mapDistancePoint) {
+	public void setDistancePoint(TrackPoint mapDistancePoint) {
 		this.mapDistancePoint = mapDistancePoint;
 		mapDistanceTrkpList.add(mapDistancePoint);
-		mapDistanceDrawList.addPoint((GeoPoint) mapDistancePoint, Color.GREEN, "Punkt 1", Color.BLACK, 24f);
-	}
-	
-	public DrawObjectList getTrackDrawList() {
-		return mapTrackDrawList;
+		mapDistanceDrawList.addPoint((TrackPoint) mapDistancePoint, Color.GREEN, "Punkt 1", Color.BLACK, 24f);
 	}
 	
 	public void reloadTrackPointHandler()
@@ -225,7 +219,6 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	public void loadOverlayLists()
 	{
 		mapTrkpList.clear();
-		mapTrackDrawList.clear();
 		if(TPL.size() > 0){
 			
 			for(TrackPoint tp : TPL)
@@ -233,9 +226,6 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 				mapTrkpList.add(tp);
 				Log.d("GEO", String.valueOf(tp));
 			}
-			mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(0), Color.GREEN, "Start", Color.BLACK, 24f);
-			mapTrackDrawList.addPoint(mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1), Color.RED, "Stop", Color.BLACK, 24f);
-			Log.i("MAP","Start: " + mapTrkpList.getGeoPoint(0) + ", Stop: " + mapTrkpList.getGeoPoint(mapTrkpList.getLength()-1));
 		}
 	}
 	
