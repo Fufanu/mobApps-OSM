@@ -47,6 +47,7 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	public SettingsContainer()
 	{
 		
+		//LIsten initialisieren
 		mapTrkpList = new TrackPointList();
 		mapDistanceTrkpList = new TrackPointList();
 		mapLocationTrkpList = new TrackPointList();
@@ -175,7 +176,6 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	
 	public void setCenter(TrackPoint center) {
 		this.center = center;
-		Log.d("GEO", String.valueOf(center));
 	}
 	
 	public ITileSource getTileSource() {
@@ -199,16 +199,18 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	}
 	
 	public void setDistancePoint(TrackPoint mapDistancePoint) {
-		this.mapDistancePoint = mapDistancePoint;
-		mapDistanceTrkpList.add(mapDistancePoint);
+		this.mapDistancePoint = mapDistancePoint;				//1.Punkt der Distanzmessung zwischenspeichern
+		mapDistanceTrkpList.add(mapDistancePoint);				//Punkt in die Liste für die Distanz aufnehmen
 	}
 	
+	//Setzt den TrackpointHandler neu, wenn eine neue gpx ausgewählt wurde
 	public void reloadTrackPointHandler()
 	{
 		TPH = new TrackPointsHandler(DM.readGPSLogFile(this.getCurrentLogFile())); 
 		TPL = TPH.getPointsList();
 	}
 	
+	//Kopiert die Trackpoint Liste in die FhflTrackPointList
 	public void loadOverlayLists()
 	{
 		mapTrkpList.clear();
@@ -247,19 +249,19 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	}
 	public void addtoTPL(TrackPoint p)
 	{
-		
 		TPL.add(p);
-		Log.d("TRPList Elemente:", String.valueOf(TPL.size()));
+		Log.i("CONTAINER", "Elemente:" + String.valueOf(TPL.size()));
 	}
 
+	//VariableChangedListener: wird von VaribaleChanged in der MainActivity ausgelöst, dass das enstrechende Objekt auf Veränderung prüft 
 	@Override
 	public void onVariableChanged(Object o) {
-		Log.d("SETTINGSLIST", String.valueOf(center.getLatitudeE6()) + " " + center.getLongitudeE6());
+		Log.i("CONTAINER", String.valueOf(center.getLatitudeE6()) + " " + center.getLongitudeE6());
 		mapView.getController().setCenter(center);
 		loadOverlayLists();
 		mapView.postInvalidate();
-		
 	}
+	
 	public TrackPointList getMapLocationTrkpList() {
 		return mapLocationTrkpList;
 	}

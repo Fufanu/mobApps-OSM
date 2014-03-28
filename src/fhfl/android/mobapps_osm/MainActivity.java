@@ -1,8 +1,6 @@
 package fhfl.android.mobapps_osm;
 
 
-import org.osmdroid.util.GeoPoint;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,12 +16,11 @@ import android.view.MenuItem;
 public class MainActivity extends FragmentActivity {
 
 	SettingsContainer settings = new SettingsContainer();
-	private static final long MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 1; // in
-																		// Meters
-	private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000; // in
-																	// Milliseconds
-	protected LocationManager locationManager;
-	private VariableChanged variableChanged = new VariableChanged(null);
+	private static final long MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 1; 	// in Meters
+	private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000; 		// in Milliseconds
+	
+	protected LocationManager locationManager;							
+	private VariableChanged variableChanged = new VariableChanged(null);// VariableChangedListener
 	private Location position;
 
 	@Override

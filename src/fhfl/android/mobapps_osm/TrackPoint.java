@@ -1,11 +1,13 @@
 package fhfl.android.mobapps_osm;
 
 import java.text.SimpleDateFormat;
-
 import org.osmdroid.util.GeoPoint;
-
+import android.annotation.SuppressLint;
 import android.util.Log;
 
+//
+@SuppressLint("SimpleDateFormat")
+@SuppressWarnings("serial")
 public class TrackPoint extends GeoPoint{
 	private boolean valid = false;
 	private String Date = "empty";
@@ -14,6 +16,7 @@ public class TrackPoint extends GeoPoint{
 	SimpleDateFormat stime = new SimpleDateFormat("kk:mm:ss");
 	SimpleDateFormat sdate = new SimpleDateFormat("yyyy-MM-dd");
 	
+	// Konstruktor zum Parsen aus einer Datei
 	public TrackPoint(String XML){
 		
 		super(0,0);	
@@ -21,6 +24,7 @@ public class TrackPoint extends GeoPoint{
 		
 	}
 	
+	//Standart Konstruktor von GeoPoint 
 	public TrackPoint(int lat, int lon)
 	{
 		super(lat,lon);

@@ -136,6 +136,7 @@ public class TrackPointList implements Serializable
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void readObject(java.io.ObjectInputStream in)
 	{
 		try {

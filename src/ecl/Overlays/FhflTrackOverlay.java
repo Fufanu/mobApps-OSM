@@ -12,6 +12,9 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.Log;
 
+//Klasse von Veranstaltung mit Veränderung, sodass Start- und Stoppunkte gezeichnet werden
+
+//Mit kleinen Änderungen in der Zeichnung; Start und Zielpunkt werden hier als Kreise gezeichnet.
 public class FhflTrackOverlay extends Overlay {
 	private Paint paint;
 	private Paint point;
@@ -69,7 +72,8 @@ public class FhflTrackOverlay extends Overlay {
 						arg0.drawCircle(p2.x, p2.y, 6, point);
 					}
 				}
-			} else if (trkList.getLength() == 1) // nur wenn ein Trackpoint vorhanden
+			// nur wenn ein Trackpoint vorhanden
+			} else if (trkList.getLength() == 1)
 			{
 				Point p1 = new Point();
 				p1 = projection.toPixels(trkList.getGeoPoint(0), p1);

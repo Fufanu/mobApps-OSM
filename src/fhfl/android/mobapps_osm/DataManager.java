@@ -4,23 +4,17 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
+@SuppressLint("SimpleDateFormat")
 public class DataManager {
 	
 	SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy_kk-mm-ss");

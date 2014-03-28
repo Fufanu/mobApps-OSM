@@ -28,10 +28,10 @@ import ecl.Overlays.FhflTrackOverlay;
 
 public class fragment_map extends Fragment implements MapEventsReceiver, OnClickListener {
 	
-	private SettingsContainer settings;
+	private SettingsContainer settings; // Zentraler DatenContainer
 	private Context context;
 	private ResourceProxy mapResourceProxy;
-	private ToggleButton TB_Center;
+	private ToggleButton TB_Center;		// Button für Zentrierung
 	
 	
 	@Override
@@ -40,7 +40,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		
 		super.onCreate(savedInstanceState);
 		
-		//Initialisierung
+		//Initialisierung des DatenContainers und des Buttons
 		context = inflater.getContext();
 		MainActivity activity = (MainActivity) getActivity();
 		settings = activity.settings;
@@ -49,6 +49,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		TB_Center.setOnClickListener(this);
 		TB_Center.setChecked(settings.isFollowing());
 		
+		//Initialisierung der Karte
 		mapViewInit(view);
 		
 		return view;
@@ -111,23 +112,25 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
         
         Log.d("OUTPUT", mapView.getOverlays().toString());
         
-        MapListener mapListener = new MapListener()
+        
+        //Listener um die TouchEvents zu handeln
+        @SuppressWarnings("unused")
+		MapListener mapListener = new MapListener()
 		{
 			@Override
 			public boolean onScroll(ScrollEvent e) {
-				if(!settings.isFollowing())
-					settings.setCenter((TrackPoint) mapView.getMapCenter());
+				if(!settings.isFollowing())										//Setzt den boolean für die Zentrierung
+					settings.setCenter((TrackPoint) mapView.getMapCenter());	//Speichert den aktuellen Mittelpunkt der Karte zwischen
 				return false;
 			}
 
 			@Override
 			public boolean onZoom(ZoomEvent arg0) {
-				//do something
-		    	if(  (byte)mapView.getZoomLevel() == settings.getZoom() )
+		    	if(  (byte)mapView.getZoomLevel() == settings.getZoom() )		
 		    		return true;
 		    	
-		    	settings.setZoom( (byte)mapView.getZoomLevel() );
-		    	Log.d("MAP", "Zoom-Level: " + settings.getZoom());
+		    	settings.setZoom( (byte)mapView.getZoomLevel() );				//Speichert den aktuellen Zoomlevel der Karte zwischen
+		    	Log.i("MAP", "Zoom-Level: " + settings.getZoom());
 		        return true;
 			}
 		 };
@@ -136,12 +139,15 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		 mapView.postInvalidate();
 	}
 
+	
+	//Mit dem longPress werden die Punkte für die Distanzrechnung gesetzt
 	@Override
 	public boolean longPressHelper(IGeoPoint point) {
 		try{
 			TrackPoint tmpPoint = new TrackPoint(point.getLatitudeE6(), point.getLongitudeE6());
 			if(settings.isMeasure())
 			{
+				//2.Punkt setzen und Distanz ausrechnen
 				settings.setMeasure(false);
 				settings.getDistanceTrkpList().add(tmpPoint);
 				double a = settings.getDistancePoint().distanceTo(tmpPoint);
@@ -160,6 +166,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 			}
 			else
 			{
+				//1.Punkt setzen
 				settings.getDistanceTrkpList().clear();
 				settings.setMeasure(true);
 				settings.setDistancePoint(tmpPoint);
@@ -169,10 +176,12 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		}
 		catch(Exception e)
 		{
+			Toast.makeText(getActivity().getApplicationContext(), "cant calculate distance", Toast.LENGTH_LONG).show();
 			return false;
 		}
 	}
 
+	//Löschen der Distanzmessung auf der Karte
 	@Override
 	public boolean singleTapUpHelper(IGeoPoint arg0) {
 		if(!settings.isMeasure())
@@ -183,6 +192,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 		return true;
 	}
 
+	//Toggeln der Zentrierung
 	@Override
 	public void onClick(View v) {
 		if(v.getId() ==  R.id.fMapToggleCenter){
