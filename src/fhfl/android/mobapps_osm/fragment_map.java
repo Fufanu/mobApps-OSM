@@ -143,7 +143,7 @@ public class fragment_map extends Fragment implements MapEventsReceiver, OnClick
 
 	@Override
 	public boolean longPressHelper(IGeoPoint point) {
-		TrackPoint tmpPoint = new TrackPoint(point.getLatitude(), point.getLongitude());
+		TrackPoint tmpPoint = new TrackPoint(point.getLatitudeE6(), point.getLongitudeE6());
 		if(settings.isMeasure())
 		{
 			settings.setMeasure(false);

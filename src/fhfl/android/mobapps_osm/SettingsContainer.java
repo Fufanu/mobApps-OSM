@@ -27,7 +27,7 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	private static String[] test = {"http://toolserver.org/tiles/hikebike/"};
 	private static final ITileSource hikeBike = new XYTileSource("OpenStreetMap Hikebikemap.de", null, 9, 15, 256, ".png", test);
 	private ITileSource tileSource = hikeBike;
-	private TrackPoint center = new TrackPoint(54.775139, 9.452691); //vorläufig für Standort bis GPS läuft
+	private TrackPoint center = new TrackPoint(54775139, 9452691); //vorläufig für Standort bis GPS läuft
 	
 	private static final DataManager DM = new DataManager();
 	private TrackPointsHandler TPH;
@@ -263,7 +263,11 @@ public class SettingsContainer extends Observable implements Serializable, Varia
 	public void onVariableChanged(Object o) {
 		Log.d("SETTINGSLIST", String.valueOf(center.getLatitudeE6()) + " " + center.getLongitudeE6());
 		mapView.getController().setCenter(center);
+		if(isGpsTrack()){
+			mapTrkpList.add(TPL.get(TPL.size()-1));
+		}
 		mapView.postInvalidate();
+		
 	}
 	
 }

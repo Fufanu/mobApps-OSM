@@ -53,16 +53,18 @@ public class MainActivity extends FragmentActivity {
 					location.getLongitude(), location.getLatitude());
 			Log.d("GPS", message);
 
-			if (settings.isGpsOnControl()) {
-				if(settings.isFollowing()){
-					position = location;
-					settings.setCenter(new TrackPoint((int)position.getLatitude() / 1E6, (int)position.getLongitude() / 1E6));
-					variableChanged.setVariable(position);
+			if (settings.isGpsOnControl()) {				
+				if(settings.isGpsTrack()){
+					settings.addtoTPL(new TrackPoint((int)(location.getLatitude() * 1000000),(int)(location.getLongitude() * 1000000))); // <-- Punkt der Liste anhängen	
+					Log.d("Main", "New GPS Data");
 				}
 				
-				if(settings.isGpsTrack()){
-					settings.addtoTPL(new TrackPoint(location.getLatitude(), location.getLongitude())); // <-- Punkt der Liste anhängen	
-					Log.d("Main", "New GPS Data");
+				if(settings.isFollowing()){
+					position = location;
+					settings.setCenter(new TrackPoint((int)(location.getLatitude() * 1000000),(int)(location.getLongitude() * 1000000)));
+					//settings.setCenter(new TrackPoint((int)position.getLatitude() / 1E6, (int)position.getLongitude() / 1E6));
+					Log.d("MainAct GPS: ", String.valueOf((int)(location.getLatitude() * 1000000)) + " " + String.valueOf((int)(location.getLongitude() * 1000000)));
+					variableChanged.setVariable(position);
 				}
 			}
 		}

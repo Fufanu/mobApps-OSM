@@ -57,8 +57,11 @@ public class fragment_settings extends Fragment implements OnItemSelectedListene
 		TB_Track.setChecked(settings.isGpsTrack());
 		
 		DM = new DataManager();
-			
-		refreshDropDown();		
+		
+		if(!settings.isGpsTrack()){
+			refreshDropDown();
+		}
+				
 		updateSettingsXML();
 		
 		TB_GPS.setChecked(settings.isGpsOnControl());

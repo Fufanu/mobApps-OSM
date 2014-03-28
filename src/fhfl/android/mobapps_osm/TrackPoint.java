@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 
 import org.osmdroid.util.GeoPoint;
 
+import android.util.Log;
+
 public class TrackPoint extends GeoPoint{
 	private boolean valid = false;
 	private String Date = "empty";
@@ -11,6 +13,7 @@ public class TrackPoint extends GeoPoint{
 	private String TimeFormat = "yyyy-MM-dd kk:mm:ss.SSS";
 	SimpleDateFormat stime = new SimpleDateFormat("kk:mm:ss");
 	SimpleDateFormat sdate = new SimpleDateFormat("yyyy-MM-dd");
+	
 	public TrackPoint(String XML){
 		
 		super(0,0);	
@@ -18,7 +21,7 @@ public class TrackPoint extends GeoPoint{
 		
 	}
 	
-	public TrackPoint(double lat, double lon)
+	public TrackPoint(int lat, int lon)
 	{
 		super(lat,lon);
 		this.Time = stime.format(new java.util.Date());
@@ -26,10 +29,6 @@ public class TrackPoint extends GeoPoint{
 		TimeFormat = "yyyy-MM-dd kk:mm:ss";
 	}
 	
-	private java.util.Date Date() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	private void passXML(String XML){
 		
@@ -44,6 +43,7 @@ public class TrackPoint extends GeoPoint{
 			start = s.indexOf("lat")+5;
 			stop = s.indexOf("lon")-2;
 			this.setLatitudeE6((int)(Double.parseDouble(s.substring(start, stop)) * 1E6));
+			Log.d("TRACKPOINTS", String.valueOf(((int)(Double.parseDouble(s.substring(start, stop)) * 1E6))));
 			
 			// Lon extrahieren
 			start = s.indexOf("lon")+5;
