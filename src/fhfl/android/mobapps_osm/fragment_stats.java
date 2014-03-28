@@ -72,7 +72,7 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		// Define the number of elements you want in the chart.
 		Log.d("Ststs", "bis hier");
 
-		ArrayList<StatsPoint> data =  getNewData();
+		ArrayList<StatsPoint> data = getNewData();
 
 		Log.d("Size", String.valueOf(data.size()));
 
@@ -80,39 +80,58 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		double x[] = new double[data.size()];
 
 		double xVal = 0.0;
+		double d = 0.0;
 
 		for (int i = 0; i < data.size(); i++) {
 			y[i] = Math.round(data.get(i).getSpeed());
 			xVal += data.get(i).getTimeOffset();
 			x[i] = xVal / 60;
 			Log.d("Point " + i, "X:" + x[i] + " Y:" + y[i]);
+			d += data.get(i).getSpeed();
 		}
 
 		// Create XY Series for X Series.
-		XYSeries xSeries = new XYSeries("X Series");
+		XYSeries xSeries = new XYSeries("aufgezeichnete Geschwindigkeit");
+		XYSeries xSeries2 = new XYSeries("durchschnitts Geschwindigkeit"); 
 
 		// Adding data to the X Series.
 		for (int i = 0; i < x.length; i++) {
 			xSeries.add(x[i], y[i]);
+			xSeries2.add(x[i], d/x.length);
+			
 		}
 
 		// Create a Dataset to hold the XSeries.
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-
-		// Add X series to the Dataset.
+		dataset.addSeries(xSeries2);
 		dataset.addSeries(xSeries);
-
-		// Create XYSeriesRenderer to customize XSeries
+		
+		// Create XYSeriesRenderer to customize XSeries2
+				XYSeriesRenderer Xrenderer2 = new XYSeriesRenderer();
+				Xrenderer2.setColor(Color.RED);
+				Xrenderer2.setPointStyle(PointStyle.POINT);
+				Xrenderer2.setPointStrokeWidth(0.1F);
+				Xrenderer2.setDisplayChartValues(false);
+				
+				Xrenderer2.setLineWidth(4);
+				Xrenderer2.setFillPoints(false);
+				
+		
+				// Create XYSeriesRenderer to customize XSeries
 		XYSeriesRenderer Xrenderer = new XYSeriesRenderer();
 		Xrenderer.setColor(Color.BLUE);
 		Xrenderer.setPointStyle(PointStyle.DIAMOND);
 		Xrenderer.setDisplayChartValues(true);
-		Xrenderer.setLineWidth(4);
+		Xrenderer.setChartValuesTextSize(25.0F);
+		Xrenderer.setLineWidth(6);
 		Xrenderer.setFillPoints(true);
+				
 
 		// Create XYMultipleSeriesRenderer to customize the whole chart
 		XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-
+		mRenderer.addSeriesRenderer(Xrenderer2);
+		mRenderer.addSeriesRenderer(Xrenderer);
+		
 		mRenderer.setChartTitle("X Vs Y Chart");
 		mRenderer.setXTitle("Zeit in Minuten");
 		mRenderer.setYTitle("Geschwindigkeit in km/h");
@@ -122,14 +141,14 @@ public class fragment_stats extends Fragment implements OnClickListener {
 		mRenderer.setYAxisMax(30.0);
 		mRenderer.setYAxisMin(0.0);
 		mRenderer.setShowGrid(true);
+		mRenderer.setAxisTitleTextSize(15.0F);
+		mRenderer.setChartTitleTextSize(15.0F);
+		mRenderer.setLabelsTextSize(15.0F);
+		mRenderer.setLegendTextSize(20.0F);
+		mRenderer.setMargins(new int[] { 0, 40, 25, 10 });
 
-		/*
-		 * for(int i=0;i<z.length;i++) { mRenderer.addXTextLabel(i, mMonth[i]);
-		 * }
-		 */
-
-		// Adding the XSeriesRenderer to the MultipleRenderer.
-		mRenderer.addSeriesRenderer(Xrenderer);
+		
+		
 
 		LinearLayout chart_container = (LinearLayout) view
 				.findViewById(R.id.fStats_chart);
@@ -151,27 +170,24 @@ public class fragment_stats extends Fragment implements OnClickListener {
 
 	}
 
-	
 	private ArrayList<StatsPoint> getNewData() {
-		
+
 		ArrayList<TrackPoint> TPL = new ArrayList<TrackPoint>();
-		if(settings.isGpsTrack()){ 
+		if (settings.isGpsTrack()) {
 			TPL = settings.getTPList();
-		}
-		else
-		{ 
+		} else {
 			TPH = new TrackPointsHandler(DM.readGPSLogFile(settings
-					.getCurrentLogFile())); 
-			TPL = TPH.getPointsList(); 
+					.getCurrentLogFile()));
+			TPL = TPH.getPointsList();
 		}
-		
+
 		Date parsedDate1 = null;
 		Date parsedDate2 = null;
 		Timestamp timestamp1 = null;
 		Timestamp timestamp2 = null;
 		int p1 = 0;
 		int p2 = 0;
-		
+
 		ArrayList<StatsPoint> l = new ArrayList<StatsPoint>();
 
 		if (TPL.size() > 0)
